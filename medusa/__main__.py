@@ -886,7 +886,12 @@ class Application(object):
             app.SUBTITLES_STOP_AT_FIRST = bool(check_setting_int(app.CFG, 'Subtitles', 'subtitles_stop_at_first', 0))
             app.ACCEPT_UNKNOWN_EMBEDDED_SUBS = bool(check_setting_int(app.CFG, 'Subtitles', 'embedded_subtitles_unknown_lang', 0))
             app.SUBTITLES_HEARING_IMPAIRED = bool(check_setting_int(app.CFG, 'Subtitles', 'subtitles_hearing_impaired', 0))
-            app.SUBTITLES_FINDER_FREQUENCY = check_setting_int(app.CFG, 'Subtitles', 'subtitles_finder_frequency', 1)
+            app.SUBTITLES_FINDER_FREQUENCY = check_setting_int(app.CFG, 'Subtitles', 'subtitles_finder_frequency', 30)
+
+            # Convert old frequency value (in hours) to minutes
+            if app.SUBTITLES_FINDER_FREQUENCY < 30:
+                app.SUBTITLES_FINDER_FREQUENCY = app.SUBTITLES_FINDER_FREQUENCY * 60
+
             app.SUBTITLES_MULTI = bool(check_setting_int(app.CFG, 'Subtitles', 'subtitles_multi', 1))
             app.SUBTITLES_KEEP_ONLY_WANTED = bool(check_setting_int(app.CFG, 'Subtitles', 'subtitles_keep_only_wanted', 0))
             app.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in check_setting_list(app.CFG, 'Subtitles', 'subtitles_extra_scripts', '')]
@@ -1204,7 +1209,7 @@ class Application(object):
                                                               run_delay=update_interval,
                                                               silent=not app.USE_TRAKT)
 
-            update_interval = datetime.timedelta(hours=app.SUBTITLES_FINDER_FREQUENCY)
+            update_interval = datetime.timedelta(minutes=app.SUBTITLES_FINDER_FREQUENCY)
             app.subtitles_finder_scheduler = scheduler.Scheduler(subtitles.SubtitlesFinder(),
                                                                  cycleTime=update_interval,
                                                                  threadName='FINDSUBTITLES',
