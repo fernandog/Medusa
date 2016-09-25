@@ -1229,7 +1229,7 @@ class Application(object):
     def get_backlog_cycle_time():
         """Return backlog cycle frequency."""
         cycletime = app.DAILYSEARCH_FREQUENCY * 2 + 7
-        return max([cycletime, 720])
+        return max([cycletime, 480])
 
     @staticmethod
     def restore_cache_folder(cache_folder):
