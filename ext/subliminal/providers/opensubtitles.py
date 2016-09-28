@@ -248,6 +248,11 @@ class OpenSubtitlesProvider(Provider):
             series_episode = int(subtitle_item['SeriesEpisode']) if subtitle_item['SeriesEpisode'] else None
             filename = subtitle_item['SubFileName']
             encoding = subtitle_item.get('SubEncoding') or None
+            user_rank = subtitle_item.get('UserRank') or None
+
+            if not user_rank or user_rank not in ('trusted', 'administrator', 'vip member', 'platinum member',
+                                                  'gold member', 'silver member', 'bronze member', 'subtranslator'):
+                continue
 
             subtitle = self.subtitle_class(language, hearing_impaired, page_link, subtitle_id, matched_by, movie_kind,
                                            hash, movie_name, movie_release_name, movie_year, movie_imdb_id,
