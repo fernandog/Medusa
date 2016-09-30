@@ -3,11 +3,15 @@ import base64
 import logging
 import os
 import re
+import requests
+import time
 import zlib
 
 from babelfish import Language, language_converters
+from functools import wraps
 from guessit import guessit
-from six.moves.xmlrpc_client import ServerProxy
+from six.moves.xmlrpc_client import ProtocolError, ServerProxy, ResponseError
+from ssl import SSLError
 
 from . import Provider, TimeoutSafeTransport
 from .. import __short_version__
@@ -155,6 +159,44 @@ class OpenSubtitlesProvider(Provider):
         logger.debug('No operation')
         checked(self.server.NoOperation(self.token))
 
+    def retry(ExceptionToCheck, tries=3, delay=5, backoff=2):
+        """Retry calling the decorated function using an exponential backoff.
+
+        http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
+        original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
+
+        :param ExceptionToCheck: the exception to check. may be a tuple of
+            exceptions to check
+        :type ExceptionToCheck: Exception or tuple
+        :param tries: number of times to try (not retry) before giving up
+        :type tries: int
+        :param delay: initial delay between retries in seconds
+        :type delay: int
+        :param backoff: backoff multiplier e.g. value of 2 will double the delay
+            each retry
+        :type backoff: int
+        """
+        def deco_retry(f):
+
+            @wraps(f)
+            def f_retry(*args, **kwargs):
+                mtries, mdelay = tries, delay
+                while mtries > 1:
+                    try:
+                        return f(*args, **kwargs)
+                    except ExceptionToCheck as e:
+                        msg = "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                        logger.warning(msg)
+                        time.sleep(mdelay)
+                        mtries -= 1
+                        mdelay *= backoff
+                return f(*args, **kwargs)
+
+            return f_retry  # true decorator
+
+        return deco_retry
+
+    @retry((requests.exceptions.ConnectionError, requests.exceptions.RequestException, ProtocolError, SSLError, ResponseError,))
     def query(self, languages, hash=None, size=None, imdb_id=None, query=None, season=None, episode=None, tag=None):
         # fill the search criteria
         criteria = []
