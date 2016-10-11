@@ -333,8 +333,11 @@ def list_subtitles(tv_episode, video_path=None, limit=40):
     video = get_video(tv_episode, video_path, subtitles_dir=subtitles_dir, subtitles=False,
                       embedded_subtitles=False, release_name=release_name)
     pool = get_provider_pool()
+    pool.providers.append('opensubtitles')
     pool.discarded_providers.clear()
     subtitles_list = pool.list_subtitles(video, languages)
+    # Remove provider from the pool after manual search
+    pool.providers.remove('opensubtitles')
     scored_subtitles = score_subtitles(subtitles_list, video)[:limit]
     for subtitle, _ in scored_subtitles:
         cache.set(subtitle_key.format(id=subtitle.id).encode('utf-8'), subtitle)
@@ -380,8 +383,11 @@ def save_subtitle(tv_episode, subtitle_id, video_path=None):
                       embedded_subtitles=False, release_name=release_name)
 
     pool = get_provider_pool()
+    pool.providers.append('opensubtitles')
     if pool.download_subtitle(subtitle):
-        return save_subs(tv_episode, video, [subtitle], video_path=video_path)
+        saved_subtitles = save_subs(tv_episode, video, [subtitle], video_path=video_path)
+        pool.providers.remove('opensubtitles')
+        return saved_subtitles
 
 
 def download_subtitles(tv_episode, video_path=None, subtitles=True, embedded_subtitles=True, lang=None):
