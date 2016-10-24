@@ -94,22 +94,16 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
         search_date = datetime.datetime.today() - datetime.timedelta(days=app.PROPERS_SEARCH_DAYS)
         main_db_con = db.DBConnection()
-        if not app.POSTPONE_IF_NO_SUBS:
-            # Get the recently aired (last 2 days) shows from DB
-            search_q_params = ','.join('?' for _ in Quality.DOWNLOADED)
-            recently_aired = main_db_con.select(
-                b'SELECT indexer, showid, season, episode, status, airdate'
-                b' FROM tv_episodes'
-                b' WHERE airdate >= ?'
-                b' AND status IN ({0})'.format(search_q_params),
-                [search_date.toordinal()] + Quality.DOWNLOADED
-            )
-        else:
-            # Get recently subtitled episodes (last 2 days) from DB
-            # Episode status becomes downloaded only after found subtitles
-            last_subtitled = search_date.strftime(History.date_format)
-            recently_aired = main_db_con.select(b'SELECT indexer_id AS indexer, showid, season, episode FROM history '
-                                                b"WHERE date >= ? AND action LIKE '%10'", [last_subtitled])
+        # Get the recently aired (last 2 days) shows from DB
+        search_qualities = list(set(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST))
+        search_q_params = ','.join('?' for _ in search_qualities)
+        recently_aired = main_db_con.select(
+            b'SELECT indexer, showid, season, episode, status, airdate'
+            b' FROM tv_episodes'
+            b' WHERE airdate >= ?'
+            b' AND status IN ({0})'.format(search_q_params),
+            [search_date.toordinal()] + search_qualities
+        )
 
         if not recently_aired:
             log.info('No recently aired new episodes, nothing to search for')
@@ -226,18 +220,19 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
                         self.processed_propers.append({'name': cur_proper.name, 'date': cur_proper.date})
                     continue
 
-            # check if we have the episode as DOWNLOADED
+            # check if we have the episode as DOWNLOADED OR SNATCHED
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select(b"SELECT status, release_name "
                                              b"FROM tv_episodes WHERE indexer = ? "
-                                             b"AND showid = ? AND season = ? "
-                                             b"AND episode = ? AND status LIKE '%04'",
+                                             b"AND showid = ? AND season = ? AND episode = ? "
+                                             b"AND (status LIKE '%04' OR status LIKE '%02' OR status LIKE '%09' "
+                                             b"OR status LIKE '%12')",
                                              [best_result.indexer,
                                               best_result.series.indexerid,
                                               best_result.actual_season,
                                               best_result.actual_episodes[0]])
             if not sql_results:
-                log.info("Ignoring proper because this episode doesn't have 'DOWNLOADED' status: {name}", {
+                log.info("Ignoring proper because this episode doesn't have 'DOWNLOADED|SNATCHED' status: {name}", {
                     'name': best_result.name
                 })
                 continue
