@@ -31,6 +31,7 @@
 <input type="hidden" id="series-slug" value="${getattr(random_show, 'slug', '')}" />
 
 <div id="config-content">
+    <meta http-equiv="refresh" content="10" >
     <h2 class="header">Scheduler</h2>
     <table id="schedulerStatusTable" class="tablesorter ${'fanartOpacity' if app.FANART_BACKGROUND else ''}" width="100%">
         <thead>
