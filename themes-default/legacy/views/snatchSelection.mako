@@ -108,7 +108,7 @@
                             <th>Updated</th>
                             <th>Published</th>
                             <th>Added</th>
-                            <th data-priority="critical" class="col-search">Snatch</th>
+                            <th data-priority="critical" class="col-search"></th>
                         </tr>
                     </thead>
                     <tbody id="manualSearchTbody" aria-live="polite" aria-relevant="all">
