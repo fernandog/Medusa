@@ -343,8 +343,9 @@ class TransmissionAPI(GenericClient):
                 log.warning('Torrent is stalled. Check it: [{name}]',
                             name=torrent['name'])
             elif status == 'unregistered':
-                log.warning('Torrent was unregistered from tracker.'
-                            ' Check it: [{name}]', name=torrent['name'])
+                log.debug('Torrent was unregistered from tracker.'
+                          ' Removing it: [{name}]', name=torrent['name'])
+                self.remove_torrent(torrent['hashString'])
             elif status == 'seeding':
                 if float(torrent['uploadRatio']) < float(torrent['seedRatioLimit']):
                     log.info(
