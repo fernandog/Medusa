@@ -218,8 +218,8 @@ class Cache(object):
     def update_cache(self, search_start_time):
         """Update provider cache."""
         # check if we should update
-        if not self.should_update(search_start_time):
-            return
+        #if not self.should_update(search_start_time):
+        #    return
 
         try:
             data = self._get_rss_data()
