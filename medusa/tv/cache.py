@@ -195,8 +195,8 @@ class Cache(object):
     def update_cache(self):
         """Update provider cache."""
         # check if we should update
-        if not self.should_update():
-            return
+        # if not self.should_update():
+        #     return
 
         try:
             data = self._get_rss_data()
