@@ -48,7 +48,10 @@ class DailySearcher(object):
             log.debug('Daily search is still running, not starting it again')
             return
         elif app.forced_search_queue_scheduler.action.is_forced_search_in_progress() and not force:
-            log.warning('Manual search is running. Unable to start Daily search')
+            log.debug('Manual search is running. Unable to start Daily search')
+            return
+        elif app.proper_finder_scheduler.action.amActive and not force:
+            log.debug('Find propers is running. Unable to start Daily search')
             return
 
         self.amActive = True
