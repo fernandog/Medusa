@@ -190,6 +190,49 @@ class TransmissionAPI(GenericClient):
 
         return self.check_response()
 
+    def verify_torrent(self, info_hash):
+        """Verify torrent from client using given info_hash.
+
+        :param info_hash:
+        :type info_hash: string
+        :return
+        :rtype: bool
+        """
+        arguments = {
+            'ids': [info_hash],
+            'timeout': 30,
+        }
+
+        post_data = json.dumps({
+            'arguments': arguments,
+            'method': 'torrent-verify',
+        })
+
+        self._request(method='post', data=post_data)
+
+        return self.response.json()['result'] == 'success'
+
+    def start_now(self, info_hash):
+        """Start torrent from client using given info_hash.
+
+        :param info_hash:
+        :type info_hash: string
+        :return
+        :rtype: bool
+        """
+        arguments = {
+            'ids': [info_hash],
+        }
+
+        post_data = json.dumps({
+            'arguments': arguments,
+            'method': 'torrent-start-now',
+        })
+
+        self._request(method='post', data=post_data)
+
+        return self.response.json()['result'] == 'success'
+
     def remove_torrent(self, info_hash):
         """Remove torrent from client using given info_hash.
 
@@ -284,6 +327,11 @@ class TransmissionAPI(GenericClient):
 
         found_torrents = False
         for torrent in returned_data['arguments']['torrents']:
+            error_string = torrent.get('errorString')
+            if error_string and 'please verify local data' in error_string.lower():
+                log.warning('Torrent will be restarted because it has corrupt pieces: [{name}]', name=torrent['name'])
+                self.start_now(torrent['hashString'])
+                continue
 
             # Check if that hash was sent by Medusa
             if not is_info_hash_in_history(str(torrent['hashString'])):
@@ -307,7 +355,6 @@ class TransmissionAPI(GenericClient):
                 continue
 
             status = 'busy'
-            error_string = torrent.get('errorString')
             if torrent.get('isStalled') and not torrent['percentDone'] == 1:
                 status = 'stalled'
             elif error_string and 'unregistered torrent' in error_string.lower():
