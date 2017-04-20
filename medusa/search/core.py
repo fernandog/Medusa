@@ -166,8 +166,6 @@ def snatch_episode(result):
 
     ui.notifications.message(u'Episode snatched', result.name)
 
-    history.log_snatch(result)
-
     # don't notify when we re-download an episode
     sql_l = []
     trakt_data = []
@@ -222,6 +220,8 @@ def snatch_episode(result):
                     result.show.name,
                     episode_num(curEpObj.season, curEpObj.episode),
                 )
+
+    history.log_snatch(result)
 
     if trakt_data:
         data_episode = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)

@@ -105,7 +105,7 @@
                             % endif
                         % else:
                             % if hItem.provider > 0:
-                                % if composite.status in [SNATCHED, FAILED]:
+                                % if composite.status in [SNATCHED, SNATCHED_BEST, SNATCHED_PROPER, FAILED]:
                                     <% provider = providers.get_provider_class(GenericProvider.make_id(hItem.provider)) %>
                                     % if provider is not None:
                                         <img src="images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
@@ -158,15 +158,21 @@
                         <td class="triggerhighlight" align="center" provider="${str(sorted(hItem.actions)[0].provider)}">
                             % for cur_action in sorted(hItem.actions, key=lambda x: x.date):
                                 <% composite = Quality.split_composite_status(int(cur_action.action)) %>
-                                % if composite.status == SNATCHED:
+                                % if composite.status in [SNATCHED, SNATCHED_BEST, SNATCHED_PROPER]:
                                     <% provider = providers.get_provider_class(GenericProvider.make_id(cur_action.provider)) %>
                                     % if provider is not None:
                                         <img src="images/providers/${provider.image_name()}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${cur_action.resource}"/>
                                         % if cur_action.manually_searched:
                                             <img src="images/manualsearch.png" width="16" height="16" style="vertical-align:middle;" title="Manual searched episode" />
                                         % endif
-                                        % if cur_action.proper_tags:
-                                            <img src="images/info32.png" width="16" height="16" style="vertical-align:middle;" title="${cur_action.proper_tags.replace('|', ', ')}"/>
+                                        % if cur_action.proper_tags or cur_action.snatched_best:
+                                            <%
+                                                proper_info = cur_action.proper_tags.replace('|', ', ') if cur_action.proper_tags else ''
+                                                preferred_info = 'Preferred quality' if cur_action.snatched_best else ''
+                                                sep = '|' if preferred_info and proper_info else ''
+                                                info_title = '{preferred}{sep}{proper}'.format(preferred=preferred_info, sep=sep, proper=proper_info)
+                                            %>
+                                            <img src="images/info32.png" width="16" height="16" style="vertical-align:middle;" title="${info_title}"/>
                                         % endif
                                     % else:
                                         <img src="images/providers/missing.png" width="16" height="16" style="vertical-align:middle;" alt="missing provider" title="Missing provider: ${cur_action.provider}"/>

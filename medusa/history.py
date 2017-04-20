@@ -79,7 +79,8 @@ def log_snatch(search_result):
         else:
             provider = "unknown"
 
-        action = Quality.composite_status(SNATCHED_PROPER if cur_ep_obj.is_proper else SNATCHED, search_result.quality)
+        ep_status = Quality.split_composite_status(cur_ep_obj.status).status
+        action = Quality.composite_status(ep_status, search_result.quality)
 
         resource = search_result.name
 

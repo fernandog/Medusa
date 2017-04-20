@@ -57,7 +57,8 @@ class History(object):
         limit = max(try_int(limit), 0)
 
         common_sql = 'SELECT show_name, showid, season, episode, h.quality, ' \
-                     'action, provider, resource, date, h.proper_tags, h.manually_searched ' \
+                     'action, provider, resource, date, h.proper_tags, h.manually_searched, ' \
+                     'CASE WHEN h.action like "%12" THEN 1 else 0 END as snatched_best ' \
                      'FROM history h, tv_shows s ' \
                      'WHERE h.showid = s.indexer_id '
         filter_sql = 'AND action in (' + ','.join(['?'] * len(actions)) + ') '
@@ -108,11 +109,11 @@ class History(object):
         if action == 'downloaded':
             result = Quality.DOWNLOADED
         elif action == 'snatched':
-            result = Quality.SNATCHED + Quality.SNATCHED_PROPER
+            result = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
         return result or []
 
-    action_fields = ('action', 'provider', 'resource', 'date', 'proper_tags', 'manually_searched')
+    action_fields = ('action', 'provider', 'resource', 'date', 'proper_tags', 'manually_searched', 'snatched_best')
     # A specific action from history
     Action = namedtuple('Action', action_fields)
     Action.width = len(action_fields)
@@ -163,6 +164,7 @@ class History(object):
                 self.date,
                 self.proper_tags,
                 self.manually_searched,
+                self.snatched_best
             )
 
         def compacted(self):
