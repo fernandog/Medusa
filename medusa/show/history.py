@@ -108,7 +108,7 @@ class History(object):
         if action == 'downloaded':
             result = Quality.DOWNLOADED
         elif action == 'snatched':
-            result = Quality.SNATCHED
+            result = Quality.SNATCHED + Quality.SNATCHED_PROPER
 
         return result or []
 
