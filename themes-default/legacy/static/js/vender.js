@@ -10164,8 +10164,8 @@ this.activeTarget=b,this.clear();var c=this.selector+'[data-target="'+b+'"],'+th
       } else {
         element = this.$menu.insertAfter(this.$element);
         this.hasSameParent = true;
-      }      
-      
+      }
+
       if (!this.hasSameParent) {
           // We cannot rely on the element position, need to position relative to the window
           element.css("position", "fixed");
@@ -10187,7 +10187,7 @@ this.activeTarget=b,this.clear();var c=this.selector+'[data-target="'+b+'"],'+th
       if (this.options.fitToElement === true) {
           element.css("width", this.$element.outerWidth() + "px");
       }
-    
+
       this.shown = true;
       return this;
     },
@@ -10508,7 +10508,7 @@ this.activeTarget=b,this.clear();var c=this.selector+'[data-target="'+b+'"],'+th
         this.focused = true;
         if (this.options.showHintOnFocus && this.skipShowHintOnFocus !== true) {
           if(this.options.showHintOnFocus === "all") {
-            this.lookup(""); 
+            this.lookup("");
           } else {
             this.lookup();
           }
@@ -10529,7 +10529,7 @@ this.activeTarget=b,this.clear();var c=this.selector+'[data-target="'+b+'"],'+th
         this.skipShowHintOnFocus = true;
         this.$element.focus();
         this.mouseddown = false;
-      } 
+      }
     },
 
     click: function (e) {
@@ -13007,7 +13007,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
 
   /** @const */
   var YOUTUBE_REGEXP = /^.*(youtu\.be\/|youtube\.com\/v\/|youtube\.com\/embed\/|youtube\.com\/watch\?v=|youtube\.com\/watch\?.*\&v=)([^#\&\?]*).*/i;
-  
+
   /* PLUGIN DEFINITION
    * ========================= */
 
@@ -13023,7 +13023,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     }
 
     var returnValues;
-    
+
     this.each(function (eachIndex) {
       var $this = $(this)
         , obj = $this.data('backstretch');
@@ -13034,7 +13034,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         // Is this a method they're trying to execute?
         if (typeof args[0] === 'string' &&
             typeof obj[args[0]] === 'function') {
-              
+
           // Call the method
           var returnValue = obj[args[0]].apply(obj, Array.prototype.slice.call(args, 1));
           if (returnValue === obj) { // If a method is chaining
@@ -13044,7 +13044,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
             returnValues = returnValues || [];
             returnValues[eachIndex] = returnValue;
           }
-          
+
           return; // Nothing further to do
         }
 
@@ -13070,7 +13070,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
       obj = new Backstretch(this, images, options || {});
       $this.data('backstretch', obj);
     });
-    
+
     return returnValues ? returnValues.length === 1 ? returnValues[0] : returnValues : this;
   };
 
@@ -13242,9 +13242,9 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
       // Use the image located at where we stopped
       return imageSizes[Math.min(j, lastAllowedImage)];
     };
-    
+
     var replaceTagsInUrl = function (url, templateReplacer) {
-        
+
         if (typeof url === 'string') {
             url = url.replace(/{{(width|height)}}/g, templateReplacer);
         } else if (url instanceof Array) {
@@ -13256,7 +13256,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
                 }
             }
         }
-        
+
         return url;
     };
 
@@ -13296,7 +13296,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     };
 
   })();
-  
+
   var isVideoSource = function (source) {
     return YOUTUBE_REGEXP.test(source.url) || source.isVideo;
   };
@@ -13378,18 +13378,18 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
       var image;
 
       for (var i = 0; i < sources.length; i++) {
-        
+
         if (isVideoSource(sources[i])) {
-          
+
           // Do not preload videos. There are issues with that.
           // First - we need to keep an instance of the preloaded and use that exactly, not a copy.
           // Second - there are memory issues.
           // If there will be a requirement from users - I'll try to implement this.
 
           continue;
-            
+
         } else {
-      
+
           image = new Image();
           image.src = sources[i].url;
 
@@ -13400,9 +13400,9 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
           } else {
             $(image).on('load error', loaded);
           }
-            
+
         }
-        
+
       }
     };
   })();
@@ -13582,7 +13582,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
 
     this.originalImages = this.images;
     this.images = optimalSizeImages(
-        this.options.alwaysTestWindowResolution ? $window : this.$root, 
+        this.options.alwaysTestWindowResolution ? $window : this.$root,
         this.originalImages);
 
     /**
@@ -13593,13 +13593,13 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
 
     // Don't create a new wrap if one already exists (from a previous instance of Backstretch)
     var $existing = this.$container.children(".backstretch").first();
-    this.$wrap = $existing.length ? $existing : 
+    this.$wrap = $existing.length ? $existing :
         $('<div class="backstretch"></div>')
         .css(this.options.bypassCss ? {} : styles.wrap)
         .appendTo(this.$container);
 
     if (!this.options.bypassCss) {
-        
+
         // Non-body elements need some style adjustments
         if (!this.isBody) {
           // If the container is statically positioned, we need to make it relative,
@@ -13620,7 +13620,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         this.$wrap.css({
             position: this.isBody && supportsFixedPosition ? 'fixed' : 'absolute'
         });
-    
+
     }
 
     // Set the first image
@@ -13650,7 +13650,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     if (transition instanceof Array) {
       transition = transition[Math.round(Math.random() * (transition.length - 1))];
     }
-    
+
     var $new = options['new'];
     var $old = options['old'] ? options['old'] : $([]);
 
@@ -13664,10 +13664,10 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
           easing: options.easing || undefined
         });
         break;
-        
+
       case 'fadeinout':
       case 'fade_in_out':
-            
+
         var fadeInNew = function () {
             $new.fadeIn({
               duration: options.duration / 2,
@@ -13675,7 +13675,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
               easing: options.easing || undefined
             });
         };
-        
+
         if ($old.length) {
             $old.fadeOut({
               duration: options.duration / 2,
@@ -13685,7 +13685,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         } else {
             fadeInNew();
         }
-        
+
         break;
 
       case 'pushleft':
@@ -13920,7 +13920,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
             var $this = $(this)
               , $wrapper = $this.parent()
               , options = $wrapper.data('options');
-              
+
             if (overrideOptions) {
               options = $.extend({}, options, overrideOptions);
             }
@@ -13945,12 +13945,12 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
 
             // Show the image, then delete the old one
             var bringInNextImage = function () {
-              
+
               if (oldVideoWrapper) {
                 oldVideoWrapper.stop();
                 oldVideoWrapper.destroy();
               }
-              
+
               $oldItemWrapper.remove();
 
               // Resume the slideshow
@@ -13968,7 +13968,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
               $(['after', 'show']).each(function () {
                 that.$container.trigger($.Event('backstretch.' + this, evtOptions), [that, newIndex]);
               });
-              
+
               if (isVideo) {
                 that.videoWrapper.play();
               }
@@ -14005,7 +14005,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         if (!isVideo) {
           that.$item.attr('src', selectedImage.url);
         }
-        
+
         that._currentImage = selectedImage;
 
         return that;
@@ -14030,22 +14030,22 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     , pause: function () {
         // Pause the slideshow
         this.paused = true;
-        
+
         if (this.videoWrapper) {
           this.videoWrapper.pause();
         }
-        
+
         return this;
       }
 
     , resume: function () {
         // Resume the slideshow
         this.paused = false;
-        
+
         if (this.videoWrapper) {
           this.videoWrapper.play();
         }
-        
+
         this.cycle();
         return this;
       }
@@ -14058,10 +14058,10 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
 
           var duration = (this._currentImage && this._currentImage.duration) || this.options.duration;
           var isVideo = isVideoSource(this._currentImage);
-          
+
           var callNext = function () {
             this.$item.off('.cycle');
-            
+
             // Check for paused slideshow
             if (!this.paused) {
               this.next();
@@ -14097,12 +14097,12 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
           if (isVideo && !this._currentImage.duration) {
             // It's a video - playing until end
             this.$item.on('ended.cycle', $.proxy(callNext, this));
-            
+
           } else {
             // Cycling according to specified duration
             this._cycleTimeout = setTimeout($.proxy(callNext, this), duration);
           }
-          
+
         }
         return this;
       }
@@ -14115,7 +14115,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         if (this.videoWrapper) {
           this.videoWrapper.destroy();
         }
-        
+
         // Clear the timeout
         clearTimeout(this._cycleTimeout);
 
@@ -14126,12 +14126,12 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         this.$container.removeData('backstretch');
       }
   };
-    
+
  /**
   * Video Abstraction Layer
   *
   * Static methods:
-  * > VideoWrapper.loadYoutubeAPI() -> Call in order to load the Youtube API. 
+  * > VideoWrapper.loadYoutubeAPI() -> Call in order to load the Youtube API.
   *                                   An 'youtube_api_load' event will be triggered on $(window) when the API is loaded.
   *
   * Generic:
@@ -14140,7 +14140,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
   * > player.play() -> plays the video
   * > player.pause() -> pauses the video
   * > player.setCurrentTime(position) -> seeks to a position by seconds
-  * 
+  *
   * Youtube:
   * > player.ytId will contain the youtube ID if the source is a youtube url
   * > player.ytReady is a flag telling whether the youtube source is ready for playback
@@ -14159,23 +14159,23 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
   VideoWrapper.prototype.init = function (options) {
 
     var that = this;
-    
+
     var $video;
 
     var setVideoElement = function () {
       that.$video = $video;
       that.video = $video[0];
     };
-    
+
     // Determine video type
-    
+
     var videoType = 'video';
-    
+
     if (!(options.url instanceof Array) &&
       YOUTUBE_REGEXP.test(options.url)) {
       videoType = 'youtube';
     }
-    
+
     that.type = videoType;
 
     if (videoType === 'youtube') {
@@ -14195,7 +14195,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         .attr({ 'src_to_load': src })
         .css({ 'border': 0, 'margin': 0, 'padding': 0 })
         .data('player', that);
-        
+
       if (options.loop) {
         $video.on('ended.loop', function () {
           if (!that.__manuallyStopped) {
@@ -14217,21 +14217,21 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
           $video.trigger('initsuccess');
         });
       }
-      
+
     }
     else {
       // Traditional <video> tag with multiple sources
-      
+
       $video = $('<video>')
         .prop('autoplay', false)
         .prop('controls', false)
         .prop('loop', !!options.loop)
         .prop('muted', !!options.mute || options.mute === undefined)
-        
+
         // Let the first frames be available before playback, as we do transitions
         .prop('preload', 'auto')
         .prop('poster', options.poster || '');
-        
+
       var sources = (options.url instanceof Array) ? options.url : [options.url];
 
       for (var i = 0; i < sources.length; i++) {
@@ -14241,12 +14241,12 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
         }
         $('<source>')
           .attr('src', sourceItem.src)
-          // Make sure to not specify type if unknown - 
+          // Make sure to not specify type if unknown -
           //   so the browser will try to autodetect.
           .attr('type', sourceItem.type || null)
           .appendTo($video);
       }
-      
+
       if (!$video[0].canPlayType || !sources.length) {
         $video.trigger('initerror');
       } else {
@@ -14260,7 +14260,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
 
   VideoWrapper.prototype._initYoutube = function () {
     var that = this;
-    
+
     var YT = window['YT'];
 
     that.$video
@@ -14327,8 +14327,8 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     that.ytPlayer = player;
 
     return that;
-  };    
-    
+  };
+
   VideoWrapper.prototype._updateYoutubeSize = function () {
     var that = this;
 
@@ -14367,7 +14367,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     var that = this;
 
     that.__manuallyStopped = false;
-    
+
     if (that.type === 'youtube') {
       if (that.ytReady) {
         that.$video.trigger('play');
@@ -14384,7 +14384,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     var that = this;
 
     that.__manuallyStopped = false;
-    
+
     if (that.type === 'youtube') {
       if (that.ytReady) {
         that.ytPlayer.pauseVideo();
@@ -14400,7 +14400,7 @@ return t=a?function(t){return t&&a(r(t))}:function(t){return t&&r(t)}}function e
     var that = this;
 
     that.__manuallyStopped = true;
-    
+
     if (that.type === 'youtube') {
       if (that.ytReady) {
         that.ytPlayer.pauseVideo();
@@ -55196,7 +55196,7 @@ return ImagesLoaded;
  * qTip2 - Pretty powerful tooltips - v2.2.1
  * http://qtip2.com
  *
- * Copyright (c) 2014 
+ * Copyright (c) 2014
  * Released under the MIT licenses
  * http://jquery.org/license
  *
@@ -56158,7 +56158,7 @@ C.string = function(join) {
 	var x = this.x, y = this.y;
 
 	var result = x !== y ?
-		(x === 'center' || y !== 'center' && (this.precedance === Y || this.forceY) ? 
+		(x === 'center' || y !== 'center' && (this.precedance === Y || this.forceY) ?
 			[y,x] : [x,y]
 		) :
 	[x];
@@ -58648,7 +58648,7 @@ CHECKS.ie6 = {
  * qTip2 - Pretty powerful tooltips - v2.2.1
  * http://qtip2.com
  *
- * Copyright (c) 2014 
+ * Copyright (c) 2014
  * Released under the MIT licenses
  * http://jquery.org/license
  *
@@ -59610,7 +59610,7 @@ C.string = function(join) {
 	var x = this.x, y = this.y;
 
 	var result = x !== y ?
-		(x === 'center' || y !== 'center' && (this.precedance === Y || this.forceY) ? 
+		(x === 'center' || y !== 'center' && (this.precedance === Y || this.forceY) ?
 			[y,x] : [x,y]
 		) :
 	[x];
@@ -66540,16 +66540,16 @@ return jQuery.tablesorter;
         suffixAgo: "ago",
         suffixFromNow: "from now",
         inPast: 'any moment now',
-        seconds: "less than a minute",
-        minute: "about a minute",
+        seconds: "a minute",
+        minute: "a minute",
         minutes: "%d minutes",
-        hour: "about an hour",
-        hours: "about %d hours",
+        hour: "an hour",
+        hours: "%d hours",
         day: "a day",
         days: "%d days",
-        month: "about a month",
+        month: "a month",
         months: "%d months",
-        year: "about a year",
+        year: "a year",
         years: "%d years",
         wordSeparator: " ",
         numbers: []
@@ -66819,7 +66819,7 @@ module.exports = function(str, substr) {
   substr = makeString(substr);
 
   if (str.length === 0 || substr.length === 0) return 0;
-  
+
   return str.split(substr).length - 1;
 };
 
@@ -66844,7 +66844,7 @@ var makeString = require('./helper/makeString');
 function getIndent(str) {
   var matches = str.match(/^[\s\\t]*/gm);
   var indent = matches[0].length;
-  
+
   for (var i = 1; i < matches.length; i++) {
     indent = Math.min(matches[i].length, indent);
   }
@@ -67209,7 +67209,7 @@ module.exports = function levenshtein(str1, str2) {
   str1 = makeString(str1);
   str2 = makeString(str2);
 
-  // Short cut cases  
+  // Short cut cases
   if (str1 === str2) return 0;
   if (!str1 || !str2) return Math.max(str1.length, str2.length);
 
@@ -67990,29 +67990,29 @@ var makeString = require('./helper/makeString');
 
 module.exports = function wrap(str, options){
   str = makeString(str);
-  
+
   options = options || {};
-  
+
   var width = options.width || 75;
   var seperator = options.seperator || '\n';
   var cut = options.cut || false;
   var preserveSpaces = options.preserveSpaces || false;
   var trailingSpaces = options.trailingSpaces || false;
-  
+
   var result;
-  
+
   if(width <= 0){
     return str;
   }
-  
+
   else if(!cut){
-  
+
     var words = str.split(' ');
     var current_column = 0;
     result = '';
-  
+
     while(words.length > 0){
-      
+
       // if adding a space and the next word would cause this line to be longer than width...
       if(1 + words[0].length + current_column > width){
         //start a new line if this line is not already empty
@@ -68027,44 +68027,44 @@ module.exports = function wrap(str, options){
             while(current_column < width){
               result += ' ';
               current_column++;
-            }            
+            }
           }
           //start new line
           result += seperator;
           current_column = 0;
         }
       }
-  
+
       // if not at the begining of the line, add a space in front of the word
       if(current_column > 0){
         result += ' ';
         current_column++;
       }
-  
+
       // tack on the next word, update current column, a pop words array
       result += words[0];
       current_column += words[0].length;
       words.shift();
-  
+
     }
-  
+
     // fill the rest of the line with spaces if trailingSpaces option is true
     if(trailingSpaces){
       while(current_column < width){
         result += ' ';
         current_column++;
-      }            
+      }
     }
-  
+
     return result;
-  
+
   }
-  
+
   else {
-  
+
     var index = 0;
     result = '';
-  
+
     // walk through each character and add seperators where appropriate
     while(index < str.length){
       if(index % width == 0 && index > 0){
@@ -68073,15 +68073,15 @@ module.exports = function wrap(str, options){
       result += str.charAt(index);
       index++;
     }
-  
+
     // fill the rest of the line with spaces if trailingSpaces option is true
     if(trailingSpaces){
       while(index % width > 0){
         result += ' ';
         index++;
-      }            
+      }
     }
-    
+
     return result;
   }
 };
