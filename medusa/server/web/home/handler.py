@@ -1120,6 +1120,26 @@ class Home(WebRoot):
 
         return {'result': searched_item[0]['searchstatus']}
 
+    def genericSearch(self, query):
+        from medusa.providers import sorted_provider_list
+        t = PageTemplate(rh=self, filename='genericSearch.mako')
+        submenu = [{
+            'title': 'Generic Search',
+            'path': 'home/genericSearch?query={query}'.format(query=query),
+            'icon': 'ui-icon ui-icon-pencil'
+        }]
+        results = []
+        search_string = {
+            'Generic': [query]
+        }
+        providers = [x for x in sorted_provider_list(app.RANDOMIZE_PROVIDERS)
+                     if x.is_active() and x.enable_manualsearch]
+        for cur_provider in providers:
+            results.append((cur_provider.image_name(), cur_provider.search(search_string)))
+
+        return t.render(results=results, title='Generic Search', header='Generic Search',
+                        controller='home', action='genericSearch')
+
     def snatchSelection(self, show=None, season=None, episode=None, manual_search_type='episode',
                         perform_search=0, down_cur_quality=0, show_all_results=0):
         """ The view with results for the manual selected show/episode """

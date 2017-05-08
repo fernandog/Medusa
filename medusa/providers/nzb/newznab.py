@@ -364,7 +364,7 @@ class NewznabProvider(NZBProvider):
             return {}
 
         for search_type in self.cap_tv_search.split(','):
-            if search_type == 'tvdbid' and self._get_tvdb_id():
+            if search_type == 'tvdbid' and self.show and self._get_tvdb_id():
                 return_mapping['tvdbid'] = self._get_tvdb_id()
                 # If we got a tvdb we're satisfied, we don't need to look for other capabilities.
                 if return_mapping['tvdbid']:
@@ -372,7 +372,7 @@ class NewznabProvider(NZBProvider):
             else:
                 # Move to the configured capability / indexer mappings. To see if we can get a match.
                 for map_indexer in map_caps:
-                    if map_caps[map_indexer] == search_type:
+                    if self.show and map_caps[map_indexer] == search_type:
                         if self.show.indexer == map_indexer:
                             # We have a direct match on the indexer used, no need to try the externals.
                             return_mapping[map_caps[map_indexer]] = self.show.indexerid
