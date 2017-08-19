@@ -324,7 +324,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         """
         for cur_proper in proper_list:
 
-            history_limit = datetime.datetime.today() - datetime.timedelta(days=30)
+            history_limit = datetime.datetime.today() - datetime.timedelta(days=360)
 
             main_db_con = db.DBConnection()
             history_results = main_db_con.select(
