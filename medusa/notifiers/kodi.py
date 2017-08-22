@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import logging
+import time
 from builtins import object
 
 from medusa import app, common
@@ -248,6 +249,9 @@ class Notifier(object):
 
     def clean_library(self):
         """Handle clean library KODI host via HTTP JSON-RPC."""
+        # Add sleep so Kodi Update can finish before we call Clean Library
+        time.sleep(60 * 3)
+
         if not app.USE_KODI:
             return True
         clean_library = True
