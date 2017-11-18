@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+from socket import timeout as socket_timeout
 
 from babelfish import Language, language_converters
 from datetime import datetime, timedelta
@@ -11,6 +12,9 @@ from dogpile.cache.api import NO_VALUE
 from guessit import guessit
 import pytz
 import rarfile
+import requests
+import time
+from functools import wraps
 from rarfile import RarFile, is_rarfile
 from requests import Session
 from zipfile import ZipFile, is_zipfile
@@ -49,6 +53,42 @@ title_re = re.compile(r'^(?P<series>.*?)(?: \((?:(?P<year>\d{4})|(?P<country>[A-
 
 #: Cache key for releases
 releases_key = __name__ + ':releases|{archive_id}|{archive_name}'
+
+
+def retry(exception_to_check, tries=8, delay=5, backoff=3):
+    """Retry calling the decorated function using an exponential backoff.
+
+    param exception_to_check: the exception to check. may be a tuple of exceptions to check
+    :type exception_to_check: Exception or tuple
+    :param tries: number of times to try (not retry) before giving up
+    :type tries: int
+    :param delay: initial delay between retries in seconds
+    :type delay: int
+    :param backoff: backoff multiplier e.g. value of 2 will double the delay each retry
+    :type backoff: int
+
+    http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
+    original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
+    """
+    def deco_retry(f):
+
+        @wraps(f)
+        def f_retry(*args, **kwargs):
+            mtries, mdelay = tries, delay
+            while mtries > 1:
+                try:
+                    return f(*args, **kwargs)
+                except exception_to_check as e:
+                    msg = 'Error: {error}. Retrying in {seconds} seconds...'.format(error=e.message, seconds=mdelay)
+                    logger.info(msg)
+                    time.sleep(mdelay)
+                    mtries -= 1
+                    mdelay *= backoff
+            return f(*args, **kwargs)
+
+        return f_retry  # true decorator
+
+    return deco_retry
 
 
 class LegendasTVArchive(object):
@@ -182,6 +222,7 @@ class LegendasTVProvider(Provider):
         self.logged_in = False
         self.session = None
 
+    @retry((requests.exceptions.ConnectionError, socket_timeout,))
     def initialize(self):
         self.session = Session()
         self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
@@ -200,6 +241,7 @@ class LegendasTVProvider(Provider):
             logger.debug('Logged in')
             self.logged_in = True
 
+    @retry((requests.exceptions.ConnectionError, socket_timeout,))
     def terminate(self):
         # logout
         if self.logged_in:
@@ -245,6 +287,7 @@ class LegendasTVProvider(Provider):
                 return
         return True
 
+    @retry((requests.exceptions.ConnectionError, socket_timeout,))
     @region.cache_on_arguments(expiration_time=SHOW_EXPIRATION_TIME, should_cache_fn=lambda value: value)
     def search_titles(self, title, season, title_year):
         """Search for titles matching the `title`.
@@ -321,6 +364,7 @@ class LegendasTVProvider(Provider):
 
         return titles
 
+    @retry((requests.exceptions.ConnectionError, socket_timeout,))
     @region.cache_on_arguments(expiration_time=timedelta(minutes=15).total_seconds())
     def get_archives(self, title_id, language_code, title_type, season, episode):
         """Get the archive list from a given `title_id`, `language_code`, `title_type`, `season` and `episode`.
@@ -407,6 +451,7 @@ class LegendasTVProvider(Provider):
 
         return archives
 
+    @retry((requests.exceptions.ConnectionError, socket_timeout,))
     def download_archive(self, archive):
         """Download an archive's :attr:`~LegendasTVArchive.content`.
 
@@ -429,6 +474,7 @@ class LegendasTVProvider(Provider):
         else:
             raise ValueError('Not a valid archive')
 
+    @retry((requests.exceptions.ConnectionError, socket_timeout,))
     def query(self, language, title, season=None, episode=None, year=None):
         # search for titles
         titles = self.search_titles(title, season, year)
