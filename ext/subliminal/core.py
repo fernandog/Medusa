@@ -606,8 +606,7 @@ def refine(video, episode_refiners=None, movie_refiners=None, **kwargs):
         try:
             refiner_manager[refiner].plugin(video, **kwargs)
         except:
-            logger.error('Failed to refine video %r', video.name)
-            logger.debug('Refiner exception:', exc_info=True)
+            logger.debug('Failed to refine video %r', video.name)
 
 
 def list_subtitles(videos, languages, pool_class=ProviderPool, **kwargs):
