@@ -232,7 +232,7 @@ class ApiHandler(RequestHandler):
             all args and kwargs are lowered
 
             cmd are separated by "|" e.g. &cmd=shows|future
-            kwargs are name-spaced with "." e.g. show.indexerid=101501
+            kwargs are name-spaced with "." e.g. series.indexerid=101501
             if a kwarg has no namespace asking it anyways (global)
 
             full e.g.
@@ -1163,17 +1163,17 @@ class CMD_Backlog(ApiCall):
                 'INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id '
                 'AND tv_episodes.indexer = tv_shows.indexer '
                 'WHERE tv_episodes.indexer = ? AND showid = ? AND paused = 0 ORDER BY season DESC, episode DESC',
-                [cur_show.indexer, cur_show.series_id])
+                [cur_series.indexer, cur_show.series_id])
 
             for cur_result in sql_results:
 
-                cur_ep_cat = cur_show.get_overview(cur_result['status'], manually_searched=cur_result['manually_searched'])
+                cur_ep_cat = cur_series.get_overview(cur_result['status'], manually_searched=cur_result['manually_searched'])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
                     show_eps.append(cur_result)
 
             if show_eps:
                 shows.append({
-                    'indexerid': cur_show.indexerid,
+                    'indexerid': cur_series.series_id,
                     'show_name': cur_show.name,
                     'status': cur_show.status,
                     'episodes': show_eps
@@ -2229,7 +2229,7 @@ class CMD_ShowDelete(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='{0} has been queued to be deleted'.format(show.name))
+        return _responds(RESULT_SUCCESS, msg='{0} has been queued to be deleted'.format(series.name))
 
 
 class CMD_ShowGetQuality(ApiCall):
@@ -2394,7 +2394,7 @@ class CMD_ShowPause(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='{0} has been {1}'.format(show.name, ('resumed', 'paused')[show.paused]))
+        return _responds(RESULT_SUCCESS, msg='{0} has been {1}'.format(series.name, ('resumed', 'paused')[series.paused]))
 
 
 class CMD_ShowRefresh(ApiCall):
@@ -2422,7 +2422,7 @@ class CMD_ShowRefresh(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg='{0} has queued to be refreshed'.format(show.name))
+        return _responds(RESULT_SUCCESS, msg='{0} has queued to be refreshed'.format(series.name))
 
 
 class CMD_ShowSeasonList(ApiCall):
@@ -2764,8 +2764,8 @@ class CMD_Shows(ApiCall):
                 'air_by_date': (0, 1)[cur_show.air_by_date],
                 'sports': (0, 1)[cur_show.sports],
                 'anime': (0, 1)[cur_show.anime],
-                'indexerid': cur_show.indexerid,
-                'tvdbid': cur_show.indexerid if cur_show.indexer == INDEXER_TVDBV2
+                'indexerid': cur_series.series_id,
+                'tvdbid': cur_series.series_id if cur_show.indexer == INDEXER_TVDBV2
                 else cur_show.externals.get('tvdb_id', ''),
                 'network': cur_show.network,
                 'show_name': cur_show.name,
@@ -2780,13 +2780,13 @@ class CMD_Shows(ApiCall):
             else:
                 show_dict['next_ep_airdate'] = ''
 
-            show_dict['cache'] = CMD_ShowCache((), {'indexerid': cur_show.indexerid}).run()['data']
+            show_dict['cache'] = CMD_ShowCache((), {'indexerid': cur_series.series_id}).run()['data']
             if not show_dict['network']:
                 show_dict['network'] = ''
             if self.sort == 'name':
                 shows[cur_show.name] = show_dict
             else:
-                shows[cur_show.indexerid] = show_dict
+                shows[cur_series.series_id] = show_dict
 
         return _responds(RESULT_SUCCESS, shows)
 

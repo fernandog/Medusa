@@ -76,8 +76,8 @@ def get_externals(show=None, indexer=None, indexed_show=None):
     :param indexed_show: The result of a fully indexed shows. For example after an t['12345']
     """
     if show:
-        indexer = show.indexer
-        new_show_externals = show.externals
+        indexer = series.indexer
+        new_show_externals = series.externals
     else:
         if not indexer or not indexed_show:
             raise Exception('Need a minimum of a show object or an indexer + indexer_api '
@@ -108,7 +108,7 @@ def get_externals(show=None, indexer=None, indexed_show=None):
                 log.warning(
                     u'Error getting external ids for other'
                     u' indexer {name}: {reason}',
-                    {'name': indexerApi(show.indexer).name, 'reason': error.message})
+                    {'name': indexerApi(series.indexer).name, 'reason': error.message})
 
     # Try to update with the Trakt externals.
     if app.USE_TRAKT:
@@ -137,35 +137,35 @@ def check_existing_shows(indexed_show, indexer):
 
         # Check if the new shows indexer id matches the external for the show
         # in library
-        if show.externals.get(mappings[indexer]) and indexed_show['id'] == show.externals.get(mappings[indexer]):
+        if series.externals.get(mappings[indexer]) and indexed_show['id'] == series.externals.get(mappings[indexer]):
             log.debug(u'Show already in database. [{id}] {name}',
-                      {'name': show.name, 'id': indexed_show['id']})
+                      {'name': series.name, 'id': indexed_show['id']})
             raise IndexerShowAllreadyInLibrary('The show {0} has already been added by the indexer {1}. '
                                                'Please remove the show, before you can add it through {2}.'
-                                               .format(show.name, indexerApi(show.indexer).name,
+                                               .format(series.name, indexerApi(series.indexer).name,
                                                        indexerApi(indexer).name))
 
         for new_show_external_key in new_show_externals.keys():
-            if show.indexer not in other_indexers:
+            if series.indexer not in other_indexers:
                 continue
 
             # Check if one of the new shows externals matches one of the
             # externals for the show in library.
-            if not new_show_externals.get(new_show_external_key) or not show.externals.get(new_show_external_key):
+            if not new_show_externals.get(new_show_external_key) or not series.externals.get(new_show_external_key):
                 continue
 
-            if new_show_externals.get(new_show_external_key) == show.externals.get(new_show_external_key):
+            if new_show_externals.get(new_show_external_key) == series.externals.get(new_show_external_key):
                 log.debug(
                     u'Show already in database under external ID ({existing})'
                     u' for ({id}) {name}', {
-                        'name': show.name,
-                        'id': show.externals.get(new_show_external_key),
+                        'name': series.name,
+                        'id': series.externals.get(new_show_external_key),
                         'existing': new_show_external_key,
                     }
                 )
                 raise IndexerShowAllreadyInLibrary('The show {0} has already been added by the indexer {1}. '
                                                    'Please remove the show, before you can add it through {2}.'
-                                                   .format(show.name, indexerApi(show.indexer).name,
+                                                   .format(series.name, indexerApi(series.indexer).name,
                                                            indexerApi(indexer).name))
 
 

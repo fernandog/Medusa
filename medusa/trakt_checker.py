@@ -25,17 +25,17 @@ log.logger.addHandler(logging.NullHandler())
 def set_episode_to_wanted(show, season, episode):
     """Set an episode to wanted, only if it is currently skipped."""
     # Episode must be loaded from DB to get current status and not default blank episode status
-    ep_obj = show.get_episode(season, episode)
+    ep_obj = series.get_episode(season, episode)
     if ep_obj:
 
         with ep_obj.lock:
             if ep_obj.status != SKIPPED or ep_obj.airdate == datetime.date.fromordinal(1):
                 log.info("Not setting episode '{show}' {ep} to WANTED because current status is not SKIPPED "
-                         "or it doesn't have a valid airdate", {'show': show.name, 'ep': episode_num(season, episode)})
+                         "or it doesn't have a valid airdate", {'show': series.name, 'ep': episode_num(season, episode)})
                 return
 
             log.info("Setting episode '{show}' {ep} to wanted", {
-                'show': show.name,
+                'show': series.name,
                 'ep': episode_num(season, episode)
             })
             # figure out what segment the episode is in and remember it so we can backlog it
@@ -48,7 +48,7 @@ def set_episode_to_wanted(show, season, episode):
         app.search_queue_scheduler.action.add_item(cur_backlog_queue_item)
 
         log.info("Starting backlog search for '{show}' {ep} because some episodes were set to wanted", {
-            'show': show.name,
+            'show': series.name,
             'ep': episode_num(season, episode)
         })
 
@@ -447,18 +447,18 @@ class TraktChecker(object):
 
             if app.showList:
                 for show in app.showList:
-                    if show.status == 'Ended':
-                        trakt_id = show.externals.get('trakt_id', None)
-                        if not (trakt_id or show.imdb_id):
+                    if series.status == 'Ended':
+                        trakt_id = series.externals.get('trakt_id', None)
+                        if not (trakt_id or series.imdb_id):
                             log.info("Unable to check Trakt progress for show '{show}' "
-                                     'because Trakt|IMDB ID is missing. Skipping', {'show': show.name})
+                                     'because Trakt|IMDB ID is missing. Skipping', {'show': series.name})
                             continue
 
                         try:
-                            progress = self._request('shows/{0}/progress/watched'.format(trakt_id or show.imdb_id))
+                            progress = self._request('shows/{0}/progress/watched'.format(trakt_id or series.imdb_id))
                         except (TraktException, AuthException, TokenExpiredException) as e:
                             log.info("Unable to check if show '{show}' is ended/completed. Error: {error}", {
-                                'show': show.name,
+                                'show': series.name,
                                 'error': e.message
                             })
                             continue
@@ -466,7 +466,7 @@ class TraktChecker(object):
                             if progress.get('aired', True) == progress.get('completed', False):
                                 app.show_queue_scheduler.action.removeShow(show, full=True)
                                 log.info("Show '{show}' has being queued to be removed from Medusa library", {
-                                    'show': show.name
+                                    'show': series.name
                                 })
 
     def sync_trakt_shows(self):
@@ -566,7 +566,7 @@ class TraktChecker(object):
                     self.add_show(trakt_default_indexer, indexer_id, trakt_show['title'], SKIPPED)
                     added_shows.append(indexer_id)
 
-            elif not trakt_season == 0 and not show.paused:
+            elif not trakt_season == 0 and not series.paused:
                 set_episode_to_wanted(show, trakt_season, trakt_episode)
 
         log.debug('Synced episodes with Trakt watchlist')
@@ -611,8 +611,8 @@ class TraktChecker(object):
 
     def manage_new_show(self, show):
         """Set episodes to wanted for the recently added show."""
-        log.debug("Checking for wanted episodes for show '{show}' in Trakt watchlist", {'show': show.name})
-        episodes = [i for i in self.todoWanted if i[0] == show.indexerid]
+        log.debug("Checking for wanted episodes for show '{show}' in Trakt watchlist", {'show': series.name})
+        episodes = [i for i in self.todoWanted if i[0] == series.indexerid]
 
         for episode in episodes:
             self.todoWanted.remove(episode)

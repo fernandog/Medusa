@@ -384,19 +384,19 @@ def _get_anidb_exceptions(force):
         logger.info('Checking for scene exceptions updates from AniDB')
 
         for show in app.showList:
-            if all([show.name, show.is_anime, show.indexer == INDEXER_TVDBV2]):
+            if all([series.name, show.is_anime, series.indexer == INDEXER_TVDBV2]):
                 try:
                     anime = adba.Anime(
                         None,
-                        name=show.name,
-                        tvdbid=show.indexerid,
+                        name=series.name,
+                        tvdbid=series.indexerid,
                         autoCorrectName=True
                     )
                 except ValueError as error:
                     logger.debug(
                         "Couldn't update scene exceptions for {show},"
                         " AniDB doesn't have this show. Error: {msg}".format(
-                            show=show.name, msg=error,
+                            show=series.name, msg=error,
                         )
                     )
                     continue
@@ -404,12 +404,12 @@ def _get_anidb_exceptions(force):
                     logger.error(
                         'Checking AniDB scene exceptions update failed'
                         ' for {show}. Error: {msg}'.format(
-                            show=show.name, msg=error,
+                            show=series.name, msg=error,
                         )
                     )
                     continue
 
-                if anime and anime.name != show.name:
+                if anime and anime.name != series.name:
                     series_id = int(show.series_id)
                     exceptions[series_id] = [{anime.name.decode('utf-8'): -1}]
 

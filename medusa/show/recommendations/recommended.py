@@ -77,9 +77,9 @@ class RecommendedShow(object):
         self.is_anime = False
 
         # Check if the show is currently already in the db
-        self.show_in_list = bool([show.indexerid for show in app.showList
-                                 if show.series_id == self.mapped_series_id
-                                 and show.indexer == self.mapped_indexer])
+        self.show_in_list = bool([series.indexerid for show in app.showList
+                                 if series.series_id == self.mapped_series_id
+                                 and series.indexer == self.mapped_indexer])
         self.session = session
 
     def cache_image(self, image_url, default=None):

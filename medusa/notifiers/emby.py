@@ -74,15 +74,15 @@ class Notifier(object):
                 return False
 
             if show:
-                if show.indexer == 1:
+                if series.indexer == 1:
                     provider = 'tvdb'
-                elif show.indexer == 2:
+                elif series.indexer == 2:
                     log.warning(u'EMBY: TVRage Provider no longer valid')
                     return False
                 else:
                     log.warning(u'EMBY: Provider unknown')
                     return False
-                query = '?%sid=%s' % (provider, show.indexerid)
+                query = '?%sid=%s' % (provider, series.indexerid)
             else:
                 query = ''
 

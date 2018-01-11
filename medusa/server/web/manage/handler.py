@@ -411,12 +411,12 @@ class Manage(Home, WebRoot):
                       e.indexer = ? AND e.showid = ?
                 ORDER BY e.season DESC, e.episode DESC
                 """,
-                [cur_show.indexer, cur_show.series_id]
+                [cur_series.indexer, cur_show.series_id]
             )
             filtered_episodes = []
             backlogged_episodes = [dict(row) for row in sql_results]
             for cur_result in backlogged_episodes:
-                cur_ep_cat = cur_show.get_overview(cur_result[b'status'], backlog_mode=True,
+                cur_ep_cat = cur_series.get_overview(cur_result[b'status'], backlog_mode=True,
                                                    manually_searched=cur_result[b'manually_searched'])
                 if cur_ep_cat:
                     if cur_ep_cat in selected_backlog_status and cur_result[b'airdate'] != 1:
@@ -441,9 +441,9 @@ class Manage(Home, WebRoot):
                         cur_result[b'episode_string'] = episode_string
                         filtered_episodes.append(cur_result)
 
-            show_counts[(cur_show.indexer, cur_show.series_id)] = ep_counts
-            show_cats[(cur_show.indexer, cur_show.series_id)] = ep_cats
-            show_sql_results[(cur_show.indexer, cur_show.series_id)] = filtered_episodes
+            show_counts[(cur_series.indexer, cur_show.series_id)] = ep_counts
+            show_cats[(cur_series.indexer, cur_show.series_id)] = ep_cats
+            show_sql_results[(cur_series.indexer, cur_show.series_id)] = filtered_episodes
 
         return t.render(
             showCounts=show_counts, showCats=show_cats,
@@ -614,7 +614,7 @@ class Manage(Home, WebRoot):
             cur_show_dir = os.path.basename(series_obj._location)  # pylint: disable=protected-access
             if cur_root_dir in dir_map and cur_root_dir != dir_map[cur_root_dir]:
                 new_show_dir = os.path.join(dir_map[cur_root_dir], cur_show_dir)
-                logger.log(u'For show {show.name} changing dir from {show.location} to {location}'.format
+                logger.log(u'For show {series.name} changing dir from {series.location} to {location}'.format
                            (show=series_obj, location=new_show_dir))  # pylint: disable=protected-access
             else:
                 new_show_dir = series_obj._location  # pylint: disable=protected-access
@@ -736,7 +736,7 @@ class Manage(Home, WebRoot):
                     app.show_queue_scheduler.action.refreshShow(series_obj)
                     refreshes.append(series_obj.name)
                 except CantRefreshShowException as msg:
-                    errors.append('Unable to refresh show {show.name}: {error}'.format
+                    errors.append('Unable to refresh show {series.name}: {error}'.format
                                   (show=series_obj, error=msg))
 
             if slug in to_rename:

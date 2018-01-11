@@ -129,7 +129,7 @@ class ForcedSearchQueue(generic_queue.GenericQueue):
     def is_show_in_queue(self, show):
         """Verify if the show is queued in this queue as a ForcedSearchQueueItem or FailedQueueItem."""
         for cur_item in self.queue:
-            if isinstance(cur_item, (ForcedSearchQueueItem, FailedQueueItem)) and cur_item.show.indexerid == show:
+            if isinstance(cur_item, (ForcedSearchQueueItem, FailedQueueItem)) and cur_item.series.series_id == show:
                 return True
         return False
 
@@ -144,7 +144,7 @@ class ForcedSearchQueue(generic_queue.GenericQueue):
         ep_obj_list = []
         for cur_item in self.queue:
             if isinstance(cur_item, (ForcedSearchQueueItem, FailedQueueItem)):
-                if series_obj and cur_item.show.identifier != series_obj.identifier:
+                if series_obj and cur_item.series.identifier != series_obj.identifier:
                     continue
                 ep_obj_list.append(cur_item)
         return ep_obj_list
@@ -320,14 +320,14 @@ class ForcedSearchQueueItem(generic_queue.QueueItem):
         # SEARCHQUEUE-FORCED-12345
         self.name = '{search_type}-{indexerid}'.format(
             search_type=('FORCED', 'MANUAL')[bool(manual_search)],
-            indexerid=show.indexerid
+            indexerid=series.series_id
         )
 
         self.success = None
         self.started = None
         self.results = None
 
-        self.show = show
+        self.series = show
         self.segment = segment
         self.down_cur_quality = down_cur_quality
         self.manual_search = manual_search
@@ -347,7 +347,7 @@ class ForcedSearchQueueItem(generic_queue.QueueItem):
                 }
             )
 
-            search_result = search_providers(self.show, self.segment, True, self.down_cur_quality,
+            search_result = search_providers(self.series, self.segment, True, self.down_cur_quality,
                                              self.manual_search, self.manual_search_type)
 
             if not self.manual_search and search_result:
@@ -383,7 +383,7 @@ class ForcedSearchQueueItem(generic_queue.QueueItem):
 
                 if self.manual_search_type == 'season':
                     ui.notifications.message('We have found season packs for {show_name}'
-                                             .format(show_name=self.show.name),
+                                             .format(show_name=self.series.name),
                                              'These should become visible in the manual select page.')
                 else:
                     ui.notifications.message('We have found results for {ep}'
@@ -432,13 +432,13 @@ class ManualSnatchQueueItem(generic_queue.QueueItem):
         """Initialize the class."""
         generic_queue.QueueItem.__init__(self, u'Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.name = 'MANUALSNATCH-' + str(show.indexerid)
+        self.name = 'MANUALSNATCH-' + str(series.series_id)
         self.success = None
         self.started = None
         self.results = None
         self.provider = provider
         self.segment = segment
-        self.show = show
+        self.series = show
         self.cached_result = cached_result
 
     def run(self):
@@ -447,7 +447,7 @@ class ManualSnatchQueueItem(generic_queue.QueueItem):
         self.started = True
 
         result = providers.get_provider_class(self.provider).get_result(self.segment)
-        result.series = self.show
+        result.series = self.series
         result.url = self.cached_result[b'url']
         result.quality = int(self.cached_result[b'quality'])
         result.name = self.cached_result[b'name']
@@ -511,12 +511,12 @@ class BacklogQueueItem(generic_queue.QueueItem):
         """Initialize the class."""
         generic_queue.QueueItem.__init__(self, u'Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.name = 'BACKLOG-' + str(show.indexerid)
+        self.name = 'BACKLOG-' + str(series.series_id)
 
         self.success = None
         self.started = None
 
-        self.show = show
+        self.series = show
         self.segment = segment
 
     def run(self):
@@ -524,11 +524,11 @@ class BacklogQueueItem(generic_queue.QueueItem):
         generic_queue.QueueItem.run(self)
         self.started = True
 
-        if not self.show.paused:
+        if not self.series.paused:
             try:
                 log.info('Beginning backlog search for: {name}',
-                         {'name': self.show.name})
-                search_result = search_providers(self.show, self.segment)
+                         {'name': self.series.name})
+                search_result = search_providers(self.series, self.segment)
 
                 if search_result:
                     for result in search_result:
@@ -558,7 +558,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                         time.sleep(common.cpu_presets[app.CPU_PRESET])
                 else:
                     log.info('No needed episodes found during backlog search for: {name}',
-                             {'name': self.show.name})
+                             {'name': self.series.name})
 
             # TODO: Remove the catch all exception.
             except Exception:
@@ -578,12 +578,12 @@ class FailedQueueItem(generic_queue.QueueItem):
         """Initialize the class."""
         generic_queue.QueueItem.__init__(self, u'Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.name = 'RETRY-' + str(show.indexerid)
+        self.name = 'RETRY-' + str(series.series_id)
 
         self.success = None
         self.started = None
 
-        self.show = show
+        self.series = show
         self.segment = segment
         self.down_cur_quality = down_cur_quality
 
@@ -611,7 +611,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
             # If it is wanted, self.down_cur_quality doesnt matter
             # if it isn't wanted, we need to make sure to not overwrite the existing ep that we reverted to!
-            search_result = search_providers(self.show, self.segment, True)
+            search_result = search_providers(self.series, self.segment, True)
 
             if search_result:
                 for result in search_result:
@@ -641,7 +641,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     time.sleep(common.cpu_presets[app.CPU_PRESET])
             else:
                 log.info('No needed episodes found during failed search for: {name}',
-                         {'name': self.show.name})
+                         {'name': self.series.name})
 
         # TODO: Replace the catch all exception with a more specific one.
         except Exception:

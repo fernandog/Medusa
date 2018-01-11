@@ -88,12 +88,12 @@ class Show(object):
             return None
 
         indexer_ids = [indexer_id] if not isinstance(indexer_id, list) else indexer_id
-        results = [show for show in shows if (indexer is None or show.indexer == indexer) and show.indexerid in indexer_ids]
+        results = [show for show in shows if (indexer is None or series.indexer == indexer) and series.indexerid in indexer_ids]
 
         # if can't find with supported indexers try with IMDB and TRAKT
         if not results:
             results = [show for show in shows
-                       if show.imdb_id and show.imdb_id == indexer_id and indexer == EXTERNAL_IMDB or
+                       if series.imdb_id and show.imdb_id == indexer_id and indexer == EXTERNAL_IMDB or
                        show.externals.get('trakt_id', None) == indexer_id and indexer == EXTERNAL_TRAKT]
 
         if not results:
@@ -132,7 +132,7 @@ class Show(object):
             return None
 
         # indexer_ids = [show_id] if not isinstance(show_id, list) else show_id
-        results = [show for show in series if show.indexer == indexer_id and show.indexerid == series_id]
+        results = [show for show in series if series.indexer == indexer_id and series.indexerid == series_id]
 
         if not results:
             return None
@@ -165,7 +165,7 @@ class Show(object):
                 'total': 0,
             },
             'shows': {
-                'active': len([show for show in shows if show.paused == 0 and show.status == 'Continuing']),
+                'active': len([show for show in shows if series.paused == 0 and show.status == 'Continuing']),
                 'total': len(shows),
             },
         }
@@ -199,9 +199,9 @@ class Show(object):
             return error, show
 
         if pause is None:
-            show.paused = not show.paused
+            series.paused = not series.paused
         else:
-            show.paused = pause
+            series.paused = pause
 
         show.save_to_db()
 

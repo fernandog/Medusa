@@ -80,12 +80,12 @@ def get_episodes(search_thread, searchstatus):
     results = []
 
     # Search again for the show in the library. Might have been deleted very recently.
-    series_obj = Show.find_by_id(app.showList, search_thread.show.indexer, search_thread.show.series_id)
+    series_obj = Show.find_by_id(app.showList, search_thread.series.indexer, search_thread.show.series_id)
 
     if not series_obj:
         if not search_thread.show.is_recently_deleted:
             log.error(u'No Show Object found for show with indexerID: {0}',
-                      search_thread.show.indexerid)
+                      search_thread.series.indexerid)
         return results
 
     if not isinstance(search_thread.segment, list):
@@ -120,7 +120,7 @@ def update_finished_search_queue_item(snatch_queue_item):
     # Finished Searches
 
     for search_thread in FORCED_SEARCH_HISTORY:
-        if snatch_queue_item.show and not search_thread.show.indexerid == snatch_queue_item.show.indexerid:
+        if snatch_queue_item.show and not search_thread.series.indexerid == snatch_queue_item.series.indexerid:
             continue
 
         if isinstance(search_thread, ForcedSearchQueueItem):

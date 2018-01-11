@@ -417,7 +417,7 @@ class Season(dict):
 
     def __init__(self, show=None):  # pylint: disable=super-init-not-called
         """Show attribute points to the parent show."""
-        self.show = show
+        self.series = show
 
     def __repr__(self):
         """Representation of a season object."""

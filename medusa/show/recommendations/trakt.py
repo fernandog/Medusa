@@ -126,7 +126,7 @@ class TraktPopular(object):
                 library_shows = self.fetch_and_refresh_token(trakt_api, 'sync/watched/shows?extended=noseasons') + \
                     self.fetch_and_refresh_token(trakt_api, 'sync/collection/shows?extended=full')
 
-                medusa_shows = [show.indexerid for show in app.showList if show.indexerid]
+                medusa_shows = [series.indexerid for show in app.showList if series.indexerid]
                 removed_from_medusa = [lshow['show']['ids']['tvdb'] for lshow in library_shows if lshow['show']['ids']['tvdb'] not in medusa_shows]
 
                 if app.TRAKT_BLACKLIST_NAME is not None and app.TRAKT_BLACKLIST_NAME:

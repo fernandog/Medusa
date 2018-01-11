@@ -146,7 +146,7 @@ class ItaSAProvider(Provider):
         # populate the show ids
         show_ids = {}
         for show in root.findall('data/shows/show'):
-            if show.find('name').text is None:  # pragma: no cover
+            if series.find('name').text is None:  # pragma: no cover
                 continue
             show_ids[sanitize(show.find('name').text).lower()] = int(show.find('id').text)
         logger.debug('Found %d show ids', len(show_ids))

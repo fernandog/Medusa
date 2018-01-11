@@ -54,11 +54,11 @@ class FailedProcessor(object):
         if not parsed.episode_numbers:
             # Get all episode objects from that season
             self.log(logger.DEBUG, 'Detected as season pack: {release}'.format(release=releaseName))
-            segment.extend(parsed.show.get_all_episodes(parsed.season_number))
+            segment.extend(parsed.series.get_all_episodes(parsed.season_number))
         else:
             self.log(logger.DEBUG, u'Detected as single/multi episode: {release}'.format(release=releaseName))
             for episode in parsed.episode_numbers:
-                segment.append(parsed.show.get_episode(parsed.season_number, episode))
+                segment.append(parsed.series.get_episode(parsed.season_number, episode))
 
         if segment:
             self.log(logger.DEBUG, u'Adding this release to failed queue: {release}'.format(release=releaseName))

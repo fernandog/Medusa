@@ -149,9 +149,9 @@ class Home(WebRoot):
         if app.ANIME_SPLIT_HOME:
             anime = []
             for show in app.showList:
-                if shows_dir and not show._location.startswith(shows_dir):
+                if shows_dir and not series._location.startswith(shows_dir):
                     continue
-                if show.is_anime:
+                if series.is_anime:
                     anime.append(show)
                 else:
                     series.append(show)
@@ -159,7 +159,7 @@ class Home(WebRoot):
             show_lists = [[order, {'Series': series, 'Anime': anime}[order]] for order in app.SHOW_LIST_ORDER]
         else:
             for show in app.showList:
-                if shows_dir and not show._location.startswith(shows_dir):
+                if shows_dir and not series._location.startswith(shows_dir):
                     continue
                 series.append(show)
             show_lists = [['Series', series]]
@@ -945,7 +945,7 @@ class Home(WebRoot):
             shows = []
             anime = []
             for show in app.showList:
-                if show.is_anime:
+                if series.is_anime:
                     anime.append(show)
                 else:
                     shows.append(show)
@@ -984,7 +984,7 @@ class Home(WebRoot):
 
         return t.render(
             submenu=submenu[::-1], showLoc=show_loc, show_message=show_message,
-            show=series_obj, sql_results=sql_results, season_results=season_results,
+            series=series_obj, sql_results=sql_results, season_results=season_results,
             sortedShowLists=sorted_show_lists, bwl=bwl, ep_counts=ep_counts,
             ep_cats=ep_cats, all_scene_exceptions=' | '.join(series_obj.exceptions),
             scene_numbering=get_scene_numbering_for_show(series_obj),
@@ -1238,16 +1238,16 @@ class Home(WebRoot):
             return (helpers.remove_article(x), x)[not x or app.SORT_ARTICLE]
 
         if app.ANIME_SPLIT_HOME:
-            shows = []
-            anime = []
-            for show in app.showList:
-                if show.is_anime:
-                    anime.append(show)
+            series_list = []
+            anime_list = []
+            for series in app.showList:
+                if series.is_anime:
+                    anime_list.append(series)
                 else:
-                    shows.append(show)
+                    series_list.append(series)
             sorted_show_lists = [
-                ['Shows', sorted(shows, lambda x, y: cmp(titler(x.name), titler(y.name)))],
-                ['Anime', sorted(anime, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
+                ['Shows', sorted(series_list, lambda x, y: cmp(titler(x.name), titler(y.name)))],
+                ['Anime', sorted(anime_list, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
         else:
             sorted_show_lists = [
                 ['Shows', sorted(app.showList, lambda x, y: cmp(titler(x.name), titler(y.name)))]]
@@ -1380,7 +1380,7 @@ class Home(WebRoot):
 
         return t.render(
             submenu=submenu[::-1], showLoc=show_loc, show_message=show_message,
-            show=series_obj, provider_results=provider_results, episode=episode,
+            series=series_obj, provider_results=provider_results, episode=episode,
             sortedShowLists=sorted_show_lists, bwl=bwl, season=season, manual_search_type=manual_search_type,
             all_scene_exceptions=' | '.join(series_obj.exceptions),
             scene_numbering=get_scene_numbering_for_show(series_obj),
@@ -1494,14 +1494,14 @@ class Home(WebRoot):
                                    (error=e.message), logger.WARNING)
 
             with series_obj.lock:
-                show = series_obj
+                series = series_obj
                 scene_exceptions = get_scene_exceptions(series_obj)
 
             if series_obj.is_anime:
-                return t.render(show=show, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
+                return t.render(series=series, scene_exceptions=scene_exceptions, groups=groups, whitelist=whitelist,
                                 blacklist=blacklist, title='Edit Show', header='Edit Show', controller='home', action='editShow')
             else:
-                return t.render(show=show, scene_exceptions=scene_exceptions, title='Edit Show', header='Edit Show',
+                return t.render(series=series, scene_exceptions=scene_exceptions, title='Edit Show', header='Edit Show',
                                 controller='home', action='editShow')
 
         flatten_folders = not config.checkbox_to_value(flatten_folders)  # UI inverts this value
@@ -2016,7 +2016,7 @@ class Home(WebRoot):
                 elif status in [IGNORED, SKIPPED] + Quality.DOWNLOADED + Quality.ARCHIVED:
                     upd = 'Remove'
 
-                logger.log(u'{action} episodes, showid: indexerid {show.indexerid}, Title {show.name} to Watchlist'.format
+                logger.log(u'{action} episodes, showid: indexerid {series.indexerid}, Title {series.name} to Watchlist'.format
                            (action=upd, show=series_obj), logger.DEBUG)
 
                 if data:

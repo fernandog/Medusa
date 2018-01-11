@@ -83,7 +83,7 @@ class AnidbPopular(object):  # pylint: disable=too-few-public-methods
                 if recommended_show:
                     result.append(recommended_show)
             except MissingTvdbMapping:
-                log.info('Could not parse AniDB show {0}, missing tvdb mapping', show.title)
+                log.info('Could not parse AniDB show {0}, missing tvdb mapping', series.title)
             except Exception:
                 log.warning('Could not parse AniDB show, with exception: {0}', traceback.format_exc())
 

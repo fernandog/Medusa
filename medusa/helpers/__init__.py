@@ -685,7 +685,7 @@ def is_anime_in_show_list():
     :return: True if global showlist contains Anime, False if not
     """
     for show in app.showList:
-        if show.is_anime:
+        if series.is_anime:
             return True
     return False
 
@@ -735,7 +735,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
             show = Show.find_by_id(app.showList, indexer, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
-            ep = show.get_episode(None, None, absolute_number=absolute_number)
+            ep = series.get_episode(None, None, absolute_number=absolute_number)
             if ep:
                 episodes.append(ep.episode)
                 # this will always take the last found season so eps that cross
@@ -1087,21 +1087,21 @@ def validate_show(show, season=None, episode=None):
     """Reindex show from originating indexer, and return indexer information for the passed episode."""
     from medusa.indexers.indexer_api import indexerApi
     from medusa.indexers.indexer_exceptions import IndexerEpisodeNotFound, IndexerSeasonNotFound, IndexerShowNotFound
-    indexer_lang = show.lang
+    indexer_lang = series.lang
 
     try:
-        indexer_api_params = indexerApi(show.indexer).api_params.copy()
+        indexer_api_params = indexerApi(series.indexer).api_params.copy()
 
         if indexer_lang and not indexer_lang == app.INDEXER_DEFAULT_LANGUAGE:
             indexer_api_params['language'] = indexer_lang
 
-        if show.dvd_order != 0:
+        if series.dvd_order != 0:
             indexer_api_params['dvdorder'] = True
 
         if season is None and episode is None:
-            return show.indexer_api
+            return series.indexer_api
 
-        return show.indexer_api[show.indexerid][season][episode]
+        return series.indexer_api[series.indexerid][season][episode]
     except (IndexerEpisodeNotFound, IndexerSeasonNotFound, IndexerShowNotFound) as error:
         log.debug(u'Unable to validate show. Reason: {0!r}', error.message)
         pass

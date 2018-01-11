@@ -526,8 +526,8 @@ class Tmdb(BaseIndexer):
         if total_updates and filter_show_list:
             new_list = []
             for show in filter_show_list:
-                if show.indexerid in total_updates:
-                    new_list.append(show.indexerid)
+                if series.indexerid in total_updates:
+                    new_list.append(series.indexerid)
             total_updates = new_list
 
         return list(total_updates)
