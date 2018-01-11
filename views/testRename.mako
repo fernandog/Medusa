@@ -20,9 +20,9 @@
 </div>
 </div>
     % endif
-<input type="hidden" id="series-id" value="${show.indexerid}" />
-<input type="hidden" id="indexer-name" value="${show.indexer_name}" />
-<input type="hidden" id="series-slug" value="${show.slug}" />
+<input type="hidden" id="series-id" value="${series.indexerid}" />
+<input type="hidden" id="indexer-name" value="${series.indexer_name}" />
+<input type="hidden" id="series-slug" value="${series.slug}" />
 % if not header is UNDEFINED:
     <h1 class="header">${header}</h1>
 % else:
@@ -30,9 +30,9 @@
 % endif
 <h3>Preview of the proposed name changes</h3>
 <blockquote>
-% if int(show.air_by_date) == 1 and app.NAMING_CUSTOM_ABD:
+% if int(series.air_by_date) == 1 and app.NAMING_CUSTOM_ABD:
     ${app.NAMING_ABD_PATTERN}
-% elif int(show.sports) == 1 and app.NAMING_CUSTOM_SPORTS:
+% elif int(series.sports) == 1 and app.NAMING_CUSTOM_SPORTS:
     ${app.NAMING_SPORTS_PATTERN}
 % else:
     ${app.NAMING_PATTERN}
@@ -53,7 +53,7 @@
     </table>
     </div>
     <div class="col-md-10">
-        <input type="submit" value="Rename Selected" class="btn btn-success"> <a href="home/displayShow?indexername=${show.indexer_name}&seriesid=${show.series_id}" class="btn btn-danger">Cancel Rename</a>
+        <input type="submit" value="Rename Selected" class="btn btn-success"> <a href="home/displayShow?indexername=${series.indexer_name}&seriesid=${series.series_id}" class="btn btn-danger">Cancel Rename</a>
     </div>
 </div>
 <table id="testRenameTable" class="defaultTable ${"summaryFanArt" if app.FANART_BACKGROUND else ""}" cellspacing="1" border="0" cellpadding="0">
@@ -101,5 +101,5 @@ if len(epList) > 1:
     </tbody>
 % endfor
 </table><br>
-<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="home/displayShow?indexername=${show.indexer_name}&seriesid=${show.series_id}" class="btn btn-danger">Cancel Rename</a>
+<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="home/displayShow?indexername=${series.indexer_name}&seriesid=${series.series_id}" class="btn btn-danger">Cancel Rename</a>
 </%block>

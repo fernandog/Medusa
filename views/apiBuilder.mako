@@ -199,7 +199,7 @@ var episodes = ${episodes};
         <select class="form-control" name="${parameter}" data-action="update-seasons" data-command="${command}">
             <option>${parameter}</option>
             % for show in shows:
-            <option value="${show.indexerid}">${show.name}</option>
+            <option value="${series.indexerid}">${series.name}</option>
             % endfor
         </select>
         % if 'season' in parameters:

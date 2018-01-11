@@ -11,8 +11,8 @@
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<input type="hidden" id="series-id" value="${show.indexerid}" />
-<input type="hidden" id="series-slug" value="${show.slug}" />
+<input type="hidden" id="series-id" value="${series.indexerid}" />
+<input type="hidden" id="series-slug" value="${series.slug}" />
 <div class="clearfix"></div><!-- div.clearfix //-->
 
 <%include file="/partials/showheader.mako"/>
@@ -79,7 +79,7 @@
             % endif
             <!-- add provider meta data -->
                 <div id='manualSearchMeta'>
-                    <meta data-last-prov-updates='${provider_results["last_prov_updates"]}' data-indexer-name="${show.indexer_name}" data-series-id="${show.indexerid}" data-season="${season}" data-episode="${episode}" data-manual-search-type="${manual_search_type}">
+                    <meta data-last-prov-updates='${provider_results["last_prov_updates"]}' data-indexer-name="${series.indexer_name}" data-series-id="${series.indexerid}" data-season="${season}" data-episode="${episode}" data-manual-search-type="${manual_search_type}">
                 </div>
                 <div class="col-md-12 bottom-15">
                     <div class="col-md-8 left-30">
@@ -143,7 +143,7 @@
                             </td>
                             <td class="col-date triggerhighlight">${hItem["pubdate"]}</td>
                             <td class="col-date triggerhighlight">${datetime.fromtimestamp(float(hItem["date_added"])) if hItem["date_added"] else 'NA'}</td>
-                            <td class="col-search triggerhighlight"><a class="epManualSearch" id="${str(show.indexerid)}x${season}x${episode}" name="${str(show.indexerid)}x${season}x${episode}" href='home/pickManualSearch?provider=${hItem["provider_id"]}&amp;rowid=${hItem["rowid"]}&amp;manual_search_type=${manual_search_type}'><img src="images/download.png" width="16" height="16" alt="search" title="Download selected episode" /></a></td>
+                            <td class="col-search triggerhighlight"><a class="epManualSearch" id="${str(series.indexerid)}x${season}x${episode}" name="${str(series.indexerid)}x${season}x${episode}" href='home/pickManualSearch?provider=${hItem["provider_id"]}&amp;rowid=${hItem["rowid"]}&amp;manual_search_type=${manual_search_type}'><img src="images/download.png" width="16" height="16" alt="search" title="Download selected episode" /></a></td>
                         </tr>
                     % endfor
                     </tbody>

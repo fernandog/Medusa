@@ -4,7 +4,7 @@
 %>
 <%
 if not show is UNDEFINED:
-    __quality = int(show.quality)
+    __quality = int(series.quality)
 else:
     __quality = int(app.QUALITY_DEFAULT)
 allowed_qualities, preferred_qualities = Quality.split_quality(__quality)

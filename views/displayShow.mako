@@ -19,15 +19,15 @@
 </%block>
 <%block name="content">
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-<input type="hidden" id="series-id" value="${show.series_id}" />
-<input type="hidden" id="indexer-name" value="${show.indexer_name}" />
-<input type="hidden" id="series-slug" value="${show.slug}" />
+<input type="hidden" id="series-id" value="${series.series_id}" />
+<input type="hidden" id="indexer-name" value="${series.indexer_name}" />
+<input type="hidden" id="series-slug" value="${series.slug}" />
 
 <%include file="/partials/showheader.mako"/>
 
 <div class="row">
     <div class="col-md-12 horizontal-scroll">
-        <table id="${'animeTable' if show.is_anime else 'showTable'}" class="${'displayShowTableFanArt tablesorterFanArt' if app.FANART_BACKGROUND else 'displayShowTable'} display_show" cellspacing="0" border="0" cellpadding="0">
+        <table id="${'animeTable' if series.is_anime else 'showTable'}" class="${'displayShowTableFanArt tablesorterFanArt' if app.FANART_BACKGROUND else 'displayShowTable'} display_show" cellspacing="0" border="0" cellpadding="0">
             <% cur_season = -1 %>
             <% odd = 0 %>
             <% epCount = 0 %>
@@ -43,9 +43,9 @@
                     continue
                 scene = False
                 scene_anime = False
-                if not show.air_by_date and not show.is_sports and not show.is_anime and show.is_scene:
+                if not series.air_by_date and not series.is_sports and not series.is_anime and series.is_scene:
                     scene = True
-                elif not show.air_by_date and not show.is_sports and show.is_anime and show.is_scene:
+                elif not series.air_by_date and not series.is_sports and series.is_anime and series.is_scene:
                     scene_anime = True
                 (dfltSeas, dfltEpis, dfltAbsolute) = (0, 0, 0)
                 if (epResult["season"], epResult["episode"]) in xem_numbering:
@@ -65,8 +65,8 @@
                     (scSeas, scEpis) = (dfltSeas, dfltEpis)
                     dfltEpNumbering = True
                 epLoc = epResult["location"]
-                if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
-                    epLoc = epLoc[len(show._location)+1:]
+                if epLoc and series._location and epLoc.lower().startswith(series._location.lower()):
+                    epLoc = epLoc[len(series._location)+1:]
                 %>
                 % if int(epResult["season"]) != cur_season:
                     % if cur_season == -1:
@@ -76,7 +76,7 @@
                         <th data-sorter="false" class="col-metadata">NFO</th>
                         <th data-sorter="false" class="col-metadata">TBN</th>
                         <th data-sorter="false" class="col-ep">Episode</th>
-                        <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(show.is_anime)]}>Absolute</th>
+                        <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(series.is_anime)]}>Absolute</th>
                         <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene)]}>Scene</th>
                         <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(scene_anime)]}>Scene Absolute</th>
                         <th data-sorter="false" class="col-name">Name</th>
@@ -94,16 +94,16 @@
                     <th class="row-seasonheader ${'displayShowTable' if app.FANART_BACKGROUND else 'displayShowTableFanArt'}" colspan="15" style="vertical-align: bottom; width: auto;">
                         <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${"Season " + str(epResult["season"]) if int(epResult["season"]) > 0 else "Specials"}
                         % if not any([i for i in sql_results if epResult['season'] == i['season'] and int(i['status']) == 1]):
-                        <a class="epManualSearch" href="home/snatchSelection?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult["season"]}&amp;episode=1&amp;manual_search_type=season"><img data-ep-manual-search src="images/manualsearch${'-white' if app.THEME_NAME == 'dark' else ''}.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                        <a class="epManualSearch" href="home/snatchSelection?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult["season"]}&amp;episode=1&amp;manual_search_type=season"><img data-ep-manual-search src="images/manualsearch${'-white' if app.THEME_NAME == 'dark' else ''}.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                         % endif
                         </h3>
                         <div class="season-scene-exception" data-season=${str(epResult["season"]) if int(epResult["season"]) > 0 else "Specials"}></div>
-                        <div class="pull-right"> <!-- column select and hide/show episodes -->
+                        <div class="pull-right"> <!-- column select and hide/series. episodes -->
                             % if not app.DISPLAY_ALL_SEASONS:
                                 <button id="showseason-${epResult['season']}" type="button" class="btn pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Hide Episodes</button>
                             % endif
                             <button id="popover" type="button" class="btn pull-right selectColumns">Select Columns <b class="caret"></b></button>
-                        </div> <!-- end column select and hide/show episodes -->
+                        </div> <!-- end column select and hide/series. episodes -->
                     </th>
                 </tr>
             </tbody>
@@ -138,15 +138,15 @@
                     <th class="row-seasonheader ${'displayShowTableFanArt' if app.FANART_BACKGROUND else 'displayShowTable'}" colspan="15" style="vertical-align: bottom; width: auto;">
                         <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${"Season " + str(epResult["season"]) if int(epResult["season"]) else "Specials"}
                         % if not any([i for i in sql_results if epResult['season'] == i['season'] and int(i['status']) == 1]):
-                        <a class="epManualSearch" href="home/snatchSelection?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult["season"]}&amp;episode=1&amp;manual_search_type=season"><img data-ep-manual-search src="images/manualsearch${'-white' if app.THEME_NAME == 'dark' else ''}.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                        <a class="epManualSearch" href="home/snatchSelection?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult["season"]}&amp;episode=1&amp;manual_search_type=season"><img data-ep-manual-search src="images/manualsearch${'-white' if app.THEME_NAME == 'dark' else ''}.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                         % endif
                         </h3>
                         <div class="season-scene-exception" data-season=${str(epResult["season"])}></div>
-                        <div class="pull-right"> <!-- hide/show episodes -->
+                        <div class="pull-right"> <!-- hide/series. episodes -->
                             % if not app.DISPLAY_ALL_SEASONS:
-                                <button id="showseason-${epResult['season']}" type="button" class="btn pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">Show Episodes</button>
+                                <button id="showseason-${epResult['season']}" type="button" class="btn pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}">series. Episodes</button>
                             % endif
-                        </div> <!-- end hide/show episodes -->
+                        </div> <!-- end hide/series. episodes -->
                     </th>
                 </tr>
             </tbody>
@@ -201,7 +201,7 @@
                     <td align="center" class="triggerhighlight">
                         <input type="text" placeholder="${str(dfltSeas) + 'x' + str(dfltEpis)}" size="6" maxlength="8"
                             class="sceneSeasonXEpisode form-control input-scene" data-for-season="${epResult["season"]}" data-for-episode="${epResult["episode"]}"
-                            id="sceneSeasonXEpisode_${show.indexerid}_${str(epResult["season"])}_${str(epResult["episode"])}"
+                            id="sceneSeasonXEpisode_${series.indexerid}_${str(epResult["season"])}_${str(epResult["episode"])}"
                             title="Change this value if scene numbering differs from the indexer episode numbering. Generally used for non-anime shows."
                             % if dfltEpNumbering:
                                 value=""
@@ -213,7 +213,7 @@
                     <td align="center" class="triggerhighlight">
                         <input type="text" placeholder="${str(dfltAbsolute)}" size="6" maxlength="8"
                             class="sceneAbsolute form-control input-scene" data-for-absolute="${epResult["absolute_number"]}"
-                            id="sceneAbsolute_${show.indexerid}${"_"+str(epResult["absolute_number"])}"
+                            id="sceneAbsolute_${series.indexerid}${"_"+str(epResult["absolute_number"])}"
                             title="Change this value if scene absolute numbering differs from the indexer absolute numbering. Generally used for anime shows."
                             % if dfltAbsNumbering:
                                 value=""
@@ -224,7 +224,7 @@
                     </td>
                     <td class="col-name hidden-xs triggerhighlight">
                     % if epResult["description"] != "" and epResult["description"] is not None:
-                        <img src="images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${show.indexer_slug}_${str(epResult["season"])}_${str(epResult["episode"])}" />
+                        <img src="images/info32.png" width="16" height="16" class="plotInfo" alt="" id="plot_info_${series.indexer_slug}_${str(epResult["season"])}_${str(epResult["episode"])}" />
                     % else:
                         <img src="images/info32.png" width="16" height="16" class="plotInfoNone" alt="" />
                     % endif
@@ -241,8 +241,8 @@
                             ## Lets do this exactly like ComingEpisodes and History
                             ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
                             <% airDate = datetime.datetime.fromordinal(epResult['airdate']) %>
-                            % if airDate.year >= 1970 or show.network:
-                                <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+                            % if airDate.year >= 1970 or series.network:
+                                <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], series.airs, series.network)) %>
                             % endif
                             <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
                         % else:
@@ -265,7 +265,7 @@
                     % for flag in (epResult["subtitles"] or '').split(','):
                         % if flag.strip() and Quality.split_composite_status(int(epResult['status'])).status in [DOWNLOADED, ARCHIVED]:
                             % if flag != 'und':
-                                <a class=epRedownloadSubtitle href="home/searchEpisodeSubtitles?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult['season']}&amp;episode=${epResult['episode']}&amp;lang=${flag}">
+                                <a class=epRedownloadSubtitle href="home/searchEpisodeSubtitles?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult['season']}&amp;episode=${epResult['episode']}&amp;lang=${flag}">
                                     <img src="images/subtitles/flags/${flag}.png" width="16" height="11" alt="${flag}" onError="this.onerror=null;this.src='images/flags/unknown.png';"/>
                                 </a>
                             % else:
@@ -283,16 +283,16 @@
                     <td class="col-search triggerhighlight">
                         % if int(epResult["season"]) != 0:
                             % if (int(epResult["status"]) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.DOWNLOADED ) and app.USE_FAILED_DOWNLOADS:
-                                <a class="epRetry" id="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/retryEpisode?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-search src="images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
+                                <a class="epRetry" id="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/retryEpisode?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-search src="images/search16.png" height="16" alt="retry" title="Retry Download" /></a>
                             % else:
-                                <a class="epSearch" id="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/searchEpisode?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-search src="images/search16.png" width="16" height="16" alt="search" title="Forced Search" /></a>
+                                <a class="epSearch" id="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/searchEpisode?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-search src="images/search16.png" width="16" height="16" alt="search" title="Forced Search" /></a>
                             % endif
-                            <a class="epManualSearch" id="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/snatchSelection?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-manual-search src="images/manualsearch.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                            <a class="epManualSearch" id="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/snatchSelection?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-manual-search src="images/manualsearch.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                         % else:
-                            <a class="epManualSearch" id="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(show.indexer)}x${str(show.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/snatchSelection?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-manual-search src="images/manualsearch.png" width="16" height="16" alt="search" title="Manual Search" /></a>
+                            <a class="epManualSearch" id="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" name="${str(series.indexer)}x${str(series.series_id)}x${str(epResult["season"])}x${str(epResult["episode"])}" href="home/snatchSelection?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img data-ep-manual-search src="images/manualsearch.png" width="16" height="16" alt="search" title="Manual Search" /></a>
                         % endif
-                        % if int(epResult["status"]) not in Quality.SNATCHED + Quality.SNATCHED_PROPER and app.USE_SUBTITLES and show.subtitles and epResult["location"]:
-                            <a class="epSubtitlesSearch" href="home/searchEpisodeSubtitles?indexername=${show.indexer_name}&seriesid=${show.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
+                        % if int(epResult["status"]) not in Quality.SNATCHED + Quality.SNATCHED_PROPER and app.USE_SUBTITLES and series.subtitles and epResult["location"]:
+                            <a class="epSubtitlesSearch" href="home/searchEpisodeSubtitles?indexername=${series.indexer_name}&seriesid=${series.series_id}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"><img src="images/closed_captioning.png" height="16" alt="search subtitles" title="Search Subtitles" /></a>
                         % endif
                     </td>
                 </tr>

@@ -126,13 +126,13 @@
             % if app.show_queue_scheduler.action.currentItem is not None:
                 <tr>
                     % try:
-                        <% showindexerid = app.show_queue_scheduler.action.currentItem.show.indexerid %>
+                        <% showindexerid = app.show_queue_scheduler.action.currentItem.series.series_id %>
                         <td>${showindexerid}</td>
                     % except Exception:
                         <td></td>
                     % endtry
                     % try:
-                        <% showname = app.show_queue_scheduler.action.currentItem.show.name %>
+                        <% showname = app.show_queue_scheduler.action.currentItem.series.name %>
                         <td>${showname}</td>
                     % except Exception:
                         % if app.show_queue_scheduler.action.currentItem.action_id == ShowQueueActions.ADD:
@@ -158,13 +158,13 @@
             % for item in app.show_queue_scheduler.action.queue:
                 <tr>
                     % try:
-                        <% showindexerid = item.show.indexerid %>
+                        <% showindexerid = item.series.series_id %>
                         <td>${showindexerid}</td>
                     % except Exception:
                         <td></td>
                     % endtry
                     % try:
-                        <% showname = item.show.name %>
+                        <% showname = item.series.name %>
                         <td>${showname}</td>
                     % except Exception:
                         % if item.action_id == ShowQueueActions.ADD:

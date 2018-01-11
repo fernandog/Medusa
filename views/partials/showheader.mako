@@ -13,10 +13,10 @@
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 
 <div class="row">
-    <div id="showtitle" class="col-lg-12" data-showname="${show.name}">
+    <div id="showtitle" class="col-lg-12" data-showname="${series.name}">
         <div>
-            <h1 class="title" data-indexer-name="${show.indexer_name}" data-series-id="${show.indexerid}" id="scene_exception_${show.indexerid}">
-            <a href="home/displayShow?indexername=${show.indexer_name}&seriesid=${show.indexerid}" class="snatchTitle">${show.name}</a></h1>
+            <h1 class="title" data-indexer-name="${series.indexer_name}" data-series-id="${series.indexerid}" id="scene_exception_${series.indexerid}">
+            <a href="home/displayShow?indexername=${series.indexer_name}&seriesid=${series.indexerid}" class="snatchTitle">${series.name}</a></h1>
         </div>
 
     % if action == 'snatchSelection':
@@ -87,8 +87,8 @@
         <div class="show-poster-container">
             <div class="row">
                 <div class="image-flex-container col-md-12">
-                    <a series="${show.slug}" asset="poster">
-                        <img alt="" class="show-image shadow" series="${show.slug}" asset="posterThumb" />
+                    <a series="${series.slug}" asset="poster">
+                        <img alt="" class="show-image shadow" series="${series.slug}" asset="posterThumb" />
                     </a>
                 </div>
             </div>
@@ -99,54 +99,54 @@
         <div class="show-info-container">
             <div class="row">
                 <div class="pull-right col-lg-3 col-md-3 hidden-sm hidden-xs">
-                    <img id="showBanner" class="pull-right shadow" series="${show.slug}" asset="banner">
+                    <img id="showBanner" class="pull-right shadow" series="${series.slug}" asset="banner">
                 </div>
                 <div id="show-rating" class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                 % if 'rating' in show.imdb_info:
-                     <% rating_tip = str(show.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(show.imdb_info['votes']) + " Votes" %>
-                     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
+                 % if 'rating' in series.imdb_info:
+                     <% rating_tip = str(series.imdb_info['rating']) + " / 10" + " Stars" + "<br>" + str(series.imdb_info['votes']) + " Votes" %>
+                     <span class="imdbstars" qtip-content="${rating_tip}">${series.imdb_info['rating']}</span>
                  % endif
-                 % if not show.imdb_id:
-                     <span>(${show.start_year}) - ${show.runtime} minutes - </span>
+                 % if not series.imdb_id:
+                     <span>(${series.start_year}) - ${series.runtime} minutes - </span>
                  % else:
-                     % if 'country_codes' in show.imdb_info:
-                         % for country in show.imdb_info['country_codes'].split('|'):
+                     % if 'country_codes' in series.imdb_info:
+                         % for country in series.imdb_info['country_codes'].split('|'):
                                  <img src="images/blank.png" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
                          % endfor
                      % endif
                                  <span>
-                     % if show.imdb_info.get('year'):
-                                     (${show.imdb_info['year']}) -
+                     % if series.imdb_info.get('year'):
+                                     (${series.imdb_info['year']}) -
                      % endif
-                                     ${show.imdb_info.get('runtimes') or show.runtime} minutes
+                                     ${series.imdb_info.get('runtimes') or series.runtime} minutes
                                  </span>
-                                 <a href="${anon_url('http://www.imdb.com/title/', show.imdb_id)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdb_id}">
+                                 <a href="${anon_url('http://www.imdb.com/title/', series.imdb_id)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${series.imdb_id}">
                                      <img alt="[imdb]" height="16" width="16" src="images/imdb.png" style="margin-top: -1px; vertical-align:middle;"/>
                                  </a>
                  % endif
-                % if show.externals.get('trakt_id'):
-                    <a href="${anon_url('https://trakt.tv/shows/', show.externals.get('trakt_id'))}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="https://trakt.tv/shows/${show.externals.get('trakt_id')}">
+                % if series.externals.get('trakt_id'):
+                    <a href="${anon_url('https://trakt.tv/shows/', series.externals.get('trakt_id'))}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="https://trakt.tv/shows/${series.externals.get('trakt_id')}">
                         <img alt="[trakt]" height="16" width="16" src="images/trakt.png" />
                     </a>
                 % endif
-                 <a href="${anon_url(indexerApi(show.indexer).config['show_url'], show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}">
-                     <img alt="${indexerApi(show.indexer).name}" height="16" width="16" src="images/${indexerApi(show.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/>
+                 <a href="${anon_url(indexerApi(series.indexer).config['show_url'], series.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${indexerApi(series.indexer).config["show_url"] + str(series.indexerid)}">
+                     <img alt="${indexerApi(series.indexer).name}" height="16" width="16" src="images/${indexerApi(series.indexer).config["icon"]}" style="margin-top: -1px; vertical-align:middle;"/>
                  </a>
                  % if xem_numbering or xem_absolute_numbering:
-                     <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}">
+                     <a href="${anon_url('http://thexem.de/search?q=', series.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${series.name}">
                          <img alt="[xem]" height="16" width="16" src="images/xem.png" style="margin-top: -1px; vertical-align:middle;"/>
                      </a>
                  % endif
-                     <a href="${anon_url('https://fanart.tv/series/', show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><img alt="[fanart.tv]" height="16" width="16" src="images/fanart.tv.png" class="fanart"/></a>
+                     <a href="${anon_url('https://fanart.tv/series/', series.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${series.name}"><img alt="[fanart.tv]" height="16" width="16" src="images/fanart.tv.png" class="fanart"/></a>
                  </div>
                  <div id="tags" class="pull-left col-lg-9 col-md-9 col-sm-12 col-xs-12">
                      <ul class="tags">
-                         % if show.imdb_info.get('genres'):
-                             % for imdbgenre in show.imdb_info['genres'].replace('Sci-Fi', 'Science-Fiction').split('|'):
+                         % if series.imdb_info.get('genres'):
+                             % for imdbgenre in series.imdb_info['genres'].replace('Sci-Fi', 'Science-Fiction').split('|'):
                                  <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="View other popular ${imdbgenre} shows on IMDB."><li>${imdbgenre}</li></a>
                              % endfor
-                         % elif show.genre:
-                             % for genre in show.genre.strip('|').split('|'):
+                         % elif series.genre:
+                             % for genre in series.genre.strip('|').split('|'):
                                  <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="View other popular ${genre} shows on trakt.tv."><li>${genre}</li></a>
                              % endfor
                          % endif
@@ -159,22 +159,22 @@
                 <div id="summary" class="col-md-12">
                     <div id="show-summary" class="${'summaryFanArt' if app.FANART_BACKGROUND else ''} col-lg-9 col-md-8 col-sm-8 col-xs-12">
                         <table class="summaryTable pull-left">
-                            % if show.plot:
+                            % if series.plot:
                                 <tr><td colspan=2 style="padding-bottom:15px"><i>
-                                % if len(show.plot) < 250:
-                                    <div>${show.plot}</div>
+                                % if len(series.plot) < 250:
+                                    <div>${series.plot}</div>
                                 % else:
-                                    <div>${show.plot[0:250]}<span style="display:none;">${show.plot[250:len(show.plot)]}</span>
+                                    <div>${series.plot[0:250]}<span style="display:none;">${series.plot[250:len(series.plot)]}</span>
                                     <span class="imdbPlot" style="color:#6ae;cursor:pointer">show more..</span>
                                     </div>
                                 % endif
                                     </td></tr>
                             % endif
 
-                            <% allowed_qualities, preferred_qualities = Quality.split_quality(int(show.quality)) %>
+                            <% allowed_qualities, preferred_qualities = Quality.split_quality(int(series.quality)) %>
                                 <tr><td class="showLegend">Quality: </td><td>
-                            % if show.quality in qualityPresets:
-                                ${renderQualityPill(show.quality)}
+                            % if series.quality in qualityPresets:
+                                ${renderQualityPill(series.quality)}
                             % else:
                             % if allowed_qualities:
                                 <i>Allowed:</i> ${', '.join([capture(renderQualityPill, x) for x in sorted(allowed_qualities)])}${'<br>' if preferred_qualities else ''}
@@ -183,15 +183,15 @@
                                 <i>Preferred:</i> ${', '.join([capture(renderQualityPill, x) for x in sorted(preferred_qualities)])}
                             % endif
                             % endif
-                            % if show.network and show.airs:
-                                <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} ${"" if network_timezones.test_timeformat(show.airs) else "<font color='#FF0000'><b>(invalid Timeformat)</b></font>"} on ${show.network}</td></tr>
-                            % elif show.network:
-                                <tr><td class="showLegend">Originally Airs: </td><td>${show.network}</td></tr>
-                            % elif show.airs:
-                                <tr><td class="showLegend">Originally Airs: </td><td>${show.airs} ${"" if network_timezones.test_timeformat(show.airs) else "<font color='#FF0000'><b>(invalid Timeformat)</b></font>"}</td></tr>
+                            % if series.network and series.airs:
+                                <tr><td class="showLegend">Originally Airs: </td><td>${series.airs} ${"" if network_timezones.test_timeformat(series.airs) else "<font color='#FF0000'><b>(invalid Timeformat)</b></font>"} on ${series.network}</td></tr>
+                            % elif series.network:
+                                <tr><td class="showLegend">Originally Airs: </td><td>${series.network}</td></tr>
+                            % elif series.airs:
+                                <tr><td class="showLegend">Originally Airs: </td><td>${series.airs} ${"" if network_timezones.test_timeformat(series.airs) else "<font color='#FF0000'><b>(invalid Timeformat)</b></font>"}</td></tr>
                             % endif
-                                <tr><td class="showLegend">Show Status: </td><td>${show.status}</td></tr>
-                                <tr><td class="showLegend">Default EP Status: </td><td>${statusStrings[show.default_ep_status]}</td></tr>
+                                <tr><td class="showLegend">Show Status: </td><td>${series.status}</td></tr>
+                                <tr><td class="showLegend">Default EP Status: </td><td>${statusStrings[series.default_ep_status]}</td></tr>
                             % if showLoc[1]:
                                 <tr><td class="showLegend">Location: </td><td>${showLoc[0]}</td></tr>
                             % else:
@@ -200,17 +200,17 @@
                             % if all_scene_exceptions:
                                 <tr><td class="showLegend" style="vertical-align: top;">Scene Name:</td><td>${all_scene_exceptions}</td></tr>
                             % endif
-                            % if show.show_words().required_words:
-                                <tr><td class="showLegend" style="vertical-align: top;">Required Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'required'}">${', '.join(show.show_words().required_words)}</span></td></tr>
+                            % if series.show_words().required_words:
+                                <tr><td class="showLegend" style="vertical-align: top;">Required Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'required'}">${', '.join(series.show_words().required_words)}</span></td></tr>
                             % endif
-                            % if show.show_words().ignored_words:
-                                <tr><td class="showLegend" style="vertical-align: top;">Ignored Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'ignored'}">${', '.join(show.show_words().ignored_words)}</span></td></tr>
+                            % if series.show_words().ignored_words:
+                                <tr><td class="showLegend" style="vertical-align: top;">Ignored Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'ignored'}">${', '.join(series.show_words().ignored_words)}</span></td></tr>
                             % endif
-                            % if show.show_words().preferred_words:
-                                <tr><td class="showLegend" style="vertical-align: top;">Preferred Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'preferred'}">${', '.join(show.show_words().preferred_words)}</span></td></tr>
+                            % if series.show_words().preferred_words:
+                                <tr><td class="showLegend" style="vertical-align: top;">Preferred Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'preferred'}">${', '.join(series.show_words().preferred_words)}</span></td></tr>
                             % endif
-                            % if show.show_words().undesired_words:
-                                <tr><td class="showLegend" style="vertical-align: top;">Undesired Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'undesired'}">${', '.join(show.show_words().undesired_words)}</span></td></tr>
+                            % if series.show_words().undesired_words:
+                                <tr><td class="showLegend" style="vertical-align: top;">Undesired Words: </td><td><span class="break-word ${'' if (action == "displayShow") else 'undesired'}">${', '.join(series.show_words().undesired_words)}</span></td></tr>
                             % endif
                             % if bwl and bwl.whitelist:
                                 <tr>
@@ -231,18 +231,18 @@
                     <!-- Option table right -->
                     <div id="show-status" class="col-lg-3 col-md-4 col-sm-4 col-xs-12 pull-xs-left">
                         <table class="pull-xs-left pull-md-right pull-sm-right pull-lg-right">
-                            <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
-                            <tr><td class="showLegend">Info Language:</td><td><img src="images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='images/flags/unknown.png';"/></td></tr>
+                            <% info_flag = subtitles.code_from_code(series.lang) if series.lang else '' %>
+                            <tr><td class="showLegend">Info Language:</td><td><img src="images/subtitles/flags/${info_flag}.png" width="16" height="11" alt="${series.lang}" title="${series.lang}" onError="this.onerror=null;this.src='images/flags/unknown.png';"/></td></tr>
                             % if app.USE_SUBTITLES:
-                            <tr><td class="showLegend">Subtitles: </td><td><img src="images/${("no16.png", "yes16.png")[bool(show.subtitles)]}" alt="${("N", "Y")[bool(show.subtitles)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">Subtitles: </td><td><img src="images/${("no16.png", "yes16.png")[bool(series.subtitles)]}" alt="${("N", "Y")[bool(series.subtitles)]}" width="16" height="16" /></td></tr>
                             % endif
-                            <tr><td class="showLegend">Season Folders: </td><td><img src="images/${("no16.png", "yes16.png")[bool(not show.flatten_folders or app.NAMING_FORCE_FOLDERS)]}" alt="${("N", "Y")[bool(not show.flatten_folders or app.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
-                            <tr><td class="showLegend">Paused: </td><td><img src="images/${("no16.png", "yes16.png")[bool(show.paused)]}" alt="${("N", "Y")[bool(show.paused)]}" width="16" height="16" /></td></tr>
-                            <tr><td class="showLegend">Air-by-Date: </td><td><img src="images/${("no16.png", "yes16.png")[bool(show.air_by_date)]}" alt="${("N", "Y")[bool(show.air_by_date)]}" width="16" height="16" /></td></tr>
-                            <tr><td class="showLegend">Sports: </td><td><img src="images/${("no16.png", "yes16.png")[bool(show.is_sports)]}" alt="${("N", "Y")[bool(show.is_sports)]}" width="16" height="16" /></td></tr>
-                            <tr><td class="showLegend">Anime: </td><td><img src="images/${("no16.png", "yes16.png")[bool(show.is_anime)]}" alt="${("N", "Y")[bool(show.is_anime)]}" width="16" height="16" /></td></tr>
-                            <tr><td class="showLegend">DVD Order: </td><td><img src="images/${("no16.png", "yes16.png")[bool(show.dvd_order)]}" alt="${("N", "Y")[bool(show.dvd_order)]}" width="16" height="16" /></td></tr>
-                            <tr><td class="showLegend">Scene Numbering: </td><td><img src="images/${("no16.png", "yes16.png")[bool(show.scene)]}" alt="${("N", "Y")[bool(show.scene)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">Season Folders: </td><td><img src="images/${("no16.png", "yes16.png")[bool(not series.flatten_folders or app.NAMING_FORCE_FOLDERS)]}" alt="${("N", "Y")[bool(not series.flatten_folders or app.NAMING_FORCE_FOLDERS)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">Paused: </td><td><img src="images/${("no16.png", "yes16.png")[bool(series.paused)]}" alt="${("N", "Y")[bool(series.paused)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">Air-by-Date: </td><td><img src="images/${("no16.png", "yes16.png")[bool(series.air_by_date)]}" alt="${("N", "Y")[bool(series.air_by_date)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">Sports: </td><td><img src="images/${("no16.png", "yes16.png")[bool(series.is_sports)]}" alt="${("N", "Y")[bool(series.is_sports)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">Anime: </td><td><img src="images/${("no16.png", "yes16.png")[bool(series.is_anime)]}" alt="${("N", "Y")[bool(series.is_anime)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">DVD Order: </td><td><img src="images/${("no16.png", "yes16.png")[bool(series.dvd_order)]}" alt="${("N", "Y")[bool(series.dvd_order)]}" width="16" height="16" /></td></tr>
+                            <tr><td class="showLegend">Scene Numbering: </td><td><img src="images/${("no16.png", "yes16.png")[bool(series.scene)]}" alt="${("N", "Y")[bool(series.scene)]}" width="16" height="16" /></td></tr>
                         </table>
                      </div> <!-- end of show-status -->
                 </div> <!-- end of summary -->
@@ -280,9 +280,9 @@
                         % endif
                     % endfor
                     </select>
-                    <input type="hidden" id="series-slug" value="${show.slug}" />
-                    <input type="hidden" id="series-id" value="${show.indexerid}" />
-                    <input type="hidden" id="indexer" value="${show.indexer}" />
+                    <input type="hidden" id="series-slug" value="${series.slug}" />
+                    <input type="hidden" id="series-id" value="${series.indexerid}" />
+                    <input type="hidden" id="indexer" value="${series.indexer}" />
                     <input class="btn" type="button" id="changeStatus" value="Go" />
                 </div>
             </div> <!-- checkboxControls -->
