@@ -509,6 +509,10 @@ class Cache(object):
 
         # for each cache entry
         for cur_result in sql_results:
+            if cur_result[b'indexer'] is None:
+                log.debug('Ignoring result: {0}, missing indexer. This is probably a result added prior to medusa version 0.2.0', cur_result[b'name'])
+                continue
+
             search_result = self.provider.get_result()
 
             # ignored/required words, and non-tv junk
