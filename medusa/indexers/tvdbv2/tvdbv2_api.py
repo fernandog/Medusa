@@ -370,9 +370,6 @@ class TVDBv2(BaseIndexer):
                 ep_no = dvd_ep_no
 
             if seas_no is None or ep_no is None:
-                log.warning('Invalid episode numbering (series: {0}({1}), season: {2!r}, episode: {3!r}) '
-                            'Contact TVDB forums to have it fixed',
-                            self.shows[tvdb_id]['seriesname'], tvdb_id, seas_no, ep_no)
                 continue  # Skip to next episode
 
             # float() is because https://github.com/dbr/tvnamer/issues/95 - should probably be fixed in TVDB data
@@ -675,8 +672,6 @@ class TVDBv2(BaseIndexer):
                 seasnum = episode.get('seasonnumber')
                 epno = episode.get('episodenumber')
                 if seasnum is None or epno is None:
-                    log.warning('Invalid episode numbering (series: {0}, season: {1!r}, episode: {2!r}) '
-                                'Contact TVDB forums to have it fixed', show_id, seasnum, epno)
                     continue
 
                 if int(episode['lastupdated']) > from_time:
