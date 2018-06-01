@@ -93,7 +93,7 @@ const startVue = () => {
                                 <label>
                                     <span class="component-title">Backlog search frequency</span>
                                     <span class="component-desc">
-                                        <input type="number" min="720" step="1" name="backlog_frequency" value="${app.BACKLOG_FREQUENCY}" class="form-control input-sm input75"/>
+                                        <input type="number" min="480" step="1" name="backlog_frequency" value="${app.BACKLOG_FREQUENCY}" class="form-control input-sm input75"/>
                                         <p>time in minutes between searches (min. ${app.MIN_BACKLOG_FREQUENCY})</p>
                                     </span>
                                 </label>
