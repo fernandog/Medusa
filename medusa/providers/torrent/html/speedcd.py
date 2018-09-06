@@ -129,7 +129,8 @@ class SpeedCDProvider(TorrentProvider):
                 cells = row('td')
 
                 try:
-                    title = cells[1].find('a', class_='torrent').get_text()
+                    title = cells[1].find('a', class_='torrent').get_text() 
+			if cells[1].find('a', class_='torrent') else None
                     download_url = urljoin(self.url,
                                            cells[2].find(title='Download').parent['href'])
                     if not all([title, download_url]):
