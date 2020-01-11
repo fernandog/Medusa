@@ -23,7 +23,6 @@ from medusa.helpers import (
 )
 from medusa.logger.adapters.style import BraceAdapter
 
-import requests.exceptions
 from requests.compat import urljoin
 
 
@@ -62,18 +61,8 @@ class TransmissionAPI(GenericClient):
             'method': 'session-get',
         })
 
-        try:
-            self.response = self.session.post(self.url, data=post_data.encode('utf-8'), timeout=120,
-                                              verify=app.TORRENT_VERIFY_CERT)
-        except requests.exceptions.ConnectionError as error:
-            log.warning('{name}: Unable to connect. {error}',
-                        {'name': self.name, 'error': error})
-            return False
-        except requests.exceptions.Timeout as error:
-            log.warning('{name}: Connection timed out. {error}',
-                        {'name': self.name, 'error': error})
-            return False
-
+        self.response = self.session.post(self.url, data=post_data.encode('utf-8'), timeout=120,
+                                          verify=app.TORRENT_VERIFY_CERT)
         self.auth = re.search(r'X-Transmission-Session-Id:\s*(\w+)', self.response.text).group(1)
 
         self.session.headers.update({'x-transmission-session-id': self.auth})
@@ -109,7 +98,7 @@ class TransmissionAPI(GenericClient):
     def _add_torrent_file(self, result):
 
         arguments = {
-            'metainfo': b64encode(result.content).decode('utf-8'),
+            'metainfo': b64encode(result.content),
             'paused': 1 if app.TORRENT_PAUSED else 0
         }
 
@@ -201,6 +190,49 @@ class TransmissionAPI(GenericClient):
 
         return self.check_response()
 
+    def verify_torrent(self, info_hash):
+        """Verify torrent from client using given info_hash.
+
+        :param info_hash:
+        :type info_hash: string
+        :return
+        :rtype: bool
+        """
+        arguments = {
+            'ids': [info_hash],
+            'timeout': 30,
+        }
+
+        post_data = json.dumps({
+            'arguments': arguments,
+            'method': 'torrent-verify',
+        })
+
+        self._request(method='post', data=post_data)
+
+        return self.response.json()['result'] == 'success'
+
+    def start_now(self, info_hash):
+        """Start torrent from client using given info_hash.
+
+        :param info_hash:
+        :type info_hash: string
+        :return
+        :rtype: bool
+        """
+        arguments = {
+            'ids': [info_hash],
+        }
+
+        post_data = json.dumps({
+            'arguments': arguments,
+            'method': 'torrent-start-now',
+        })
+
+        self._request(method='post', data=post_data)
+
+        return self.response.json()['result'] == 'success'
+
     def remove_torrent(self, info_hash):
         """Remove torrent from client using given info_hash.
 
@@ -279,11 +311,11 @@ class TransmissionAPI(GenericClient):
         post_data = json.dumps({'arguments': return_params, 'method': 'torrent-get'})
 
         if not self._request(method='post', data=post_data):
-            log.warning('Error while fetching torrents status')
+            log.debug('Could not connect to Transmission. Check logs')
             return
 
         try:
-            returned_data = json.loads(self.response.text)
+            returned_data = json.loads(self.response.content)
         except ValueError:
             log.warning('Unexpected data received from Transmission: {resp}',
                         {'resp': self.response.content})
@@ -295,6 +327,11 @@ class TransmissionAPI(GenericClient):
 
         found_torrents = False
         for torrent in returned_data['arguments']['torrents']:
+            error_string = torrent.get('errorString')
+            if error_string and 'please verify local data' in error_string.lower():
+                log.warning('Torrent will be restarted because it has corrupt pieces: [{name}]', name=torrent['name'])
+                self.start_now(torrent['hashString'])
+                continue
 
             # Check if that hash was sent by Medusa
             if not is_info_hash_in_history(str(torrent['hashString'])):
@@ -318,7 +355,6 @@ class TransmissionAPI(GenericClient):
                 continue
 
             status = 'busy'
-            error_string = torrent.get('errorString')
             if torrent.get('isStalled') and not torrent['percentDone'] == 1:
                 status = 'stalled'
             elif error_string and 'unregistered torrent' in error_string.lower():
@@ -354,8 +390,9 @@ class TransmissionAPI(GenericClient):
                 log.warning('Torrent is stalled. Check it: [{name}]',
                             name=torrent['name'])
             elif status == 'unregistered':
-                log.warning('Torrent was unregistered from tracker.'
-                            ' Check it: [{name}]', name=torrent['name'])
+                log.debug('Torrent was unregistered from tracker.'
+                          ' Removing it: [{name}]', name=torrent['name'])
+                self.remove_torrent(torrent['hashString'])
             elif status == 'seeding':
                 if float(torrent['uploadRatio']) < float(torrent['seedRatioLimit']):
                     log.info(
